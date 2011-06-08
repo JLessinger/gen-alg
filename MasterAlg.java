@@ -1,5 +1,5 @@
 class MasterAlg{
-	final int ALG_POP_SIZE;
+	final int ALG_POP_SIZE = 30;
 	Alg[] algPop;
 	
 	public MasterAlg(){

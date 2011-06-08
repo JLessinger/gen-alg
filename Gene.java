@@ -23,14 +23,16 @@ public class Gene{
 			s += " ";
 		}
 		setValue();
+		s += '\n';
 		s += value;
 		return s;
 	}
 	
 	private void setValue(){
+		value = 0;
 		for(int i = 0; i < genotype.length; i++){
-			if(genotype[i]){
-				value += Math.pow(2, genotype.length - i - 1);
+			if(genotype[i]){     
+				value += Math.pow(2, (genotype.length - i - 1));
 			}
 		}
 	}

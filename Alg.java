@@ -1,4 +1,4 @@
-class Alg{
+public class Alg{
 	final int NUMIND_POP_SIZE = 30;
 	NumInd[] numIndPop;
 	

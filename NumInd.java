@@ -10,7 +10,7 @@ public class NumInd{
 		String s = "Num Ind:\n";
 		for(int i = 0; i < chromosome.length; i++){
 			Gene g = chromosome[i];
-			s += "Gene " + (i) + ": " + g;
+			s += "Gene " + i + ": " + g;
 			s += "\n";
 		}
 		return s;

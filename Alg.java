@@ -28,7 +28,15 @@ public class Alg{
 			numIndTotalFitness += numIndPop[i].getNumIndFitness();
 		}
 	}
-		
+	
+	public numInd[] copyNumIndPop(){
+		numInd[] copy = new numInd[NUMIND_POP_SIZE];
+		for(int i = 0; i < NUMIND_POP_SIZE; i++){
+			copy[i] = numIndPop[i];
+		}
+		return copy;
+	}
+	
 	public void setNumIndAvgFitness(){
 		numIndAvgFitness = 0;
 		setNumIndTotalFitness();

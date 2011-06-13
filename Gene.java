@@ -1,7 +1,7 @@
 public class Gene{
 	
-	public static final int GENE_SIZE = 50;//bits (50)
-	private final int TRUE_RATE = 10; //1 out of every TRUE_RATE bits will be true
+	public static final int GENE_SIZE =  30;//bits (30)
+	private final int TRUE_RATE = 15; //1 out of every TRUE_RATE bits will be true
 	public static final long GENE_MAX_VALUE = (long)(Math.pow(2, GENE_SIZE) - 1);
 	
 	boolean[] genotype;
@@ -17,6 +17,13 @@ public class Gene{
 			else{
 				genotype[i] = false;
 			}
+		}
+		setValue();
+	}
+	
+	public Gene(Gene g){
+		for(int i = 0; i < genotype.length; i++){
+			genotype[i] = g.genotype[i];
 		}
 		setValue();
 	}

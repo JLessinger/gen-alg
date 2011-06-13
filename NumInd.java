@@ -1,15 +1,15 @@
 /**
 Dummy individuals. Simply a number whose value is 
-the sum of 100 50-bit numbers (genes)
+the sum of 10 30-bit numbers (genes)
 **/
 
 public class NumInd{
 	
-	public static final int CHROMOSOME_SIZE = 20;
+	public static final int CHROMOSOME_SIZE = 10;
 	public static final long NUMIND_MAX_FITNESS = CHROMOSOME_SIZE * Gene.GENE_MAX_VALUE;
 	
 	private long numIndFitness;
-	Gene[] chromosome;
+	private Gene[] chromosome;
 	
 	public String toString() {
 		
@@ -30,6 +30,10 @@ public class NumInd{
 		}
 	}
 	
+	public void setGene(int index, NumInd parent){
+		Gene g = new Gene(parent.chromosome[index]);
+		chromosome[index] = g;
+	}
 	public void setNumIndFitness() {
 		
 		numIndFitness = 0;
@@ -45,14 +49,7 @@ public class NumInd{
 		return numIndFitness;
 	}
 	
-	copyNumIndPop() {
-		
-		numInd[] copy = new numInd[NUMIND_POP_SIZE];
-		for(int i = 0; i < NUMIND_POP_SIZE; i++){
-			copy[i] = numIndPop[i];
-		}
-		return copy;
-	}
+	
 	
 	public static void main(String[] args) {
 		

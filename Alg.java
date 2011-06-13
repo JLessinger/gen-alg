@@ -45,14 +45,46 @@ public class Alg{
 		numIndAvgFitness = numIndTotalFitness / NUMIND_POP_SIZE;
 	}
 	
-	public static void main(String[] args) {
+	public NumInd[] copyNumIndPop() {
 		
+		NumInd[] copy = new NumInd[NUMIND_POP_SIZE];
+		for(int i = 0; i < NUMIND_POP_SIZE; i++){
+			copy[i] = numIndPop[i];
+		}
+		return copy;
+	}
+	
+	public NumInd mate(NumInd mother, NumInd father) {
+		
+		NumInd child = new NumInd();
+		for(int i = 0; i < child.CHROMOSOME_SIZE; i++){
+			if((int) (2 * Math.random())==0){
+				child.setGene(i, mother);
+			}
+			else{
+				child.setGene(i, father);
+			}
+		}
+		return child;
+	}
+	
+	public void matingSeason() {
+		
+	}
+	
+	public static void main(String[] args) {
+	/*	
 		Alg a = new Alg();
 		System.out.println(a);
 		a.setNumIndAvgFitness();
 		System.out.println(a.numIndAvgFitness + " " + NumInd.NUMIND_MAX_FITNESS);
 		System.out.println((double)NumInd.NUMIND_MAX_FITNESS / a.numIndAvgFitness);
-		System.out.println(a.numIndPop[0]);
+		System.out.println(a.numIndPop[0]); */
+		
+		Alg a = new Alg();
+		System.out.println(a);
+		NumInd kid = a.mate(a.numIndPop[0], a.numIndPop[1]);//make mate take indices as parameters, not numinds
+		System.out.println(kid);
 	}
 	
 }

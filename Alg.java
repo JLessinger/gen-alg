@@ -5,8 +5,14 @@ public class Alg{
 	private long numIndTotalFitness;
 	private long algFitness; 	//name generic things  like "fitness" according 
 	private long numIndAvgFitness;	//to the class
-	NumInd[] numIndPop;		//to avoid confusion
+	private NumInd[] numIndPop;		//to avoid confusion
 	
+	//Alg genes
+	/****/
+	
+	
+	
+	/****/
 	public Alg() {
 		
 		numIndPop = new NumInd[NUMIND_POP_SIZE];
@@ -28,6 +34,10 @@ public class Alg{
 			s += "NumInd " + (i) + ": fitness = " + n.getNumIndFitness() + "\n";
 		}
 		return s;
+	}
+	
+	public NumInd getNumInd(int index){
+		return numIndPop[index];
 	}
 	
 	public void setNumIndTotalFitness() {
@@ -54,15 +64,17 @@ public class Alg{
 		return copy;
 	}
 	
-	public NumInd mate(NumInd mother, NumInd father) {
-		
+	public NumInd mate(int motInd, int fatInd) {
+		NumInd mother = numIndPop[motInd];
+		NumInd father = numIndPop[fatInd];
 		NumInd child = new NumInd();
 		for(int i = 0; i < child.CHROMOSOME_SIZE; i++){
 			if((int) (2 * Math.random())==0){
-				child.setGene(i, mother);
-			}
+				child.setNumIndGene(i, mother);//make the gene in child's chromosome 
+							//at i the same as mother's at i 
+			}				
 			else{
-				child.setGene(i, father);
+				child.setNumIndGene(i, father);
 			}
 		}
 		return child;
@@ -83,7 +95,9 @@ public class Alg{
 		
 		Alg a = new Alg();
 		System.out.println(a);
-		NumInd kid = a.mate(a.numIndPop[0], a.numIndPop[1]);//make mate take indices as parameters, not numinds
+		NumInd kid = a.mate(0, 1);
+		System.out.println(a.getNumInd(0));
+		System.out.println(a.getNumInd(1));
 		System.out.println(kid);
 	}
 	

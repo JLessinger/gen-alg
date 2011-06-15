@@ -1,11 +1,11 @@
 /**
 Dummy individuals. Simply a number whose value is 
-the sum of 100 50-bit numbers (genes)
+the sum of 20 50-bit numbers (genes)
 **/
 
 public class NumInd{
 	
-	public static final int CHROMOSOME_SIZE = 20;
+	public static final int CHROMOSOME_SIZE = 10;
 	public static final long NUMIND_MAX_FITNESS = CHROMOSOME_SIZE * Gene.GENE_MAX_VALUE;
 	
 	private long numIndFitness;
@@ -43,15 +43,6 @@ public class NumInd{
 		
 		setNumIndFitness();
 		return numIndFitness;
-	}
-	
-	public numInd[] copyNumIndPop() {
-		
-		numInd[] copy = new numInd[NUMIND_POP_SIZE];
-		for(int i = 0; i < NUMIND_POP_SIZE; i++){
-			copy[i] = numIndPop[i];
-		}
-		return copy;
 	}
 	
 	public static void main(String[] args) {

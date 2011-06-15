@@ -1,6 +1,6 @@
 public class Gene{
 	
-	public static final int GENE_SIZE = 50;//bits (50)
+	public static final int GENE_SIZE = 20;//bits (50)
 	private final int TRUE_RATE = 10; //1 out of every TRUE_RATE bits will be true
 	public static final long GENE_MAX_VALUE = (long)(Math.pow(2, GENE_SIZE) - 1);
 	

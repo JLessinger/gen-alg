@@ -1,22 +1,24 @@
 /**
 Dummy individuals. Simply a number whose value is 
-the sum of 20 50-bit numbers (genes)
+the sum of 10 30-bit numbers (genes)
 **/
 
 public class NumInd{
 	
 	public static final int CHROMOSOME_SIZE = 10;
-	public static final long NUMIND_MAX_FITNESS = CHROMOSOME_SIZE * Gene.GENE_MAX_VALUE;
+
+	public static final long NUMIND_MAX_FITNESS = CHROMOSOME_SIZE * NumIndGene.GENE_MAX_VALUE;
+
 	
 	private long numIndFitness;
-	Gene[] chromosome;
+	private NumIndGene[] chromosome;
 	
 	public String toString() {
 		
 		String s = "Num Ind:\n";
 		for(int i = 0; i < chromosome.length; i++){
-			Gene g = chromosome[i];
-			s += "Gene " + i + ": " + g;
+			NumIndGene g = chromosome[i];
+			s += "NumIndGene " + i + ": " + g;
 			s += "\n";
 		}
 		return s;
@@ -24,12 +26,16 @@ public class NumInd{
 	
 	public NumInd() {
 		
-		chromosome = new Gene[CHROMOSOME_SIZE];
+		chromosome = new NumIndGene[CHROMOSOME_SIZE];
 		for(int i = 0; i < chromosome.length; i++){
-			chromosome[i] = new Gene();
+			chromosome[i] = new NumIndGene();
 		}
 	}
 	
+	public void setNumIndGene(int index, NumInd parent){
+		NumIndGene g = new NumIndGene(parent.chromosome[index]);
+		chromosome[index] = g;
+	}
 	public void setNumIndFitness() {
 		
 		numIndFitness = 0;
@@ -44,7 +50,7 @@ public class NumInd{
 		setNumIndFitness();
 		return numIndFitness;
 	}
-	
+
 	public static void main(String[] args) {
 		
 		NumInd n = new NumInd();

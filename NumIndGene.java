@@ -1,13 +1,13 @@
-public class Gene{
+public class NumIndGene{
 	
-	public static final int GENE_SIZE = 20;//bits (50)
-	private final int TRUE_RATE = 10; //1 out of every TRUE_RATE bits will be true
+	public static final int GENE_SIZE =  30;//bits (30)
+	private final int TRUE_RATE = 15; //1 out of every TRUE_RATE bits will be true
 	public static final long GENE_MAX_VALUE = (long)(Math.pow(2, GENE_SIZE) - 1);
 	
 	boolean[] genotype;
 	private long value;
 	
-	public Gene(){
+	public NumIndGene(){
 		
 		genotype = new boolean[GENE_SIZE];
 		for(int i = 0; i < genotype.length; i++){
@@ -21,7 +21,8 @@ public class Gene{
 		setValue();
 	}
 	
-	public Gene(Gene g){
+	public NumIndGene(NumIndGene g){
+		genotype = new boolean[GENE_SIZE];
 		for(int i = 0; i < genotype.length; i++){
 			genotype[i] = g.genotype[i];
 		}
@@ -59,7 +60,7 @@ public class Gene{
 	
 	public static void main(String[] args){
 		
-		Gene g = new Gene();
+		NumIndGene g = new NumIndGene();
 		System.out.println(g);
 	}
 	

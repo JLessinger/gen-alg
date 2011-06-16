@@ -1,3 +1,4 @@
+import java.util.*;
 public class Alg{
 	
 	final int NUMIND_POP_SIZE = 30;
@@ -109,7 +110,7 @@ public class Alg{
 	public void matingSeason() {
 		NumInd[] temPop = new NumInd[NUMIND_POP_SIZE];
 		
-		//put the best (int) elitism numinds at the front of sorted
+		//put the best elitism numinds at the front of sorted
 		sort(elitism);
 		
 		//fill tempop with the sorted numinds
@@ -124,7 +125,7 @@ public class Alg{
 			int[] parents = new int[reproductionType];
 			for(int i = 0; i < parents.length; i++){
 				/*uncomment this!*/
-				//parents[i] = selectParent();
+				//parents[i] = selectParent(parents);
 			}
 			
 			temPop[m] = mate(parents);
@@ -145,23 +146,54 @@ public class Alg{
 	
 	/*must not choose same parent twice for a particular mating.
 	this is not accounted for now.*/
-	public NumInd selectParent(){
+	//selects a parent via hybrid roulette/tournament selection such that
+	//no mating selects a parent twice
+	//post-condition: does not return a NumInd in alreadyChosen
+	public NumInd selectParent(int[] alreadyChosen){
 		
 		//holds indices referring to numIndPop indices of NumInds
 		//to be considered for mating
 		int[] subPop = new int[selection];
+		
+		//holds indices of all potential parents not already chosen
+		ArrayList<Integer> selectFrom = new ArrayList<Integer>();
+		for(int k = 0; k < NUMIND_POP_SIZE; k++){
+			if(!contains(alreadyChosen, k)){
+				selectFrom.add(k);
+			}
+		}
 		//if selection = NUMIND_POP_SIZE, subpop = pop and it is 
 		//simple roulette selection. Otherwise, weighted random tournament
 		for(int i = 0; i < selection; i++){
-			//also, should not choose the same numind twice
-			//to be part of the subpopulation. not accounted for.
-			subPop[i] = (int)(NUMIND_POP_SIZE * Math.random());
+			/*also, should not choose the same numind twice
+			to be part of the subpopulation. not accounted for.*/
+			subPop[i] = selectFrom.remove((int)(selectFrom.size() * Math.random()));
 		}
+		//pre-condition: subPop does not contain any parents already selected in this
+		//mating, and does not contain the same NumInd twice
 		return roulette(subPop);
+	}
+	
+	public boolean contains(int[] array, int k){
+		for(int i = 0; i < array.length; i++){
+			if(array[i]==k){
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	//roulette selection with array of numIndPop indices
 	public NumInd roulette(int[] pop){
+		setNumIndTotalFitness();
+		long ball = (long) (Math.random() * numIndTotalFitness); 
+		long sum = 0;
+		for(int i = 0; i < pop.length; i++){
+			sum += numIndPop[pop[i]].getNumIndFitness();
+			if(sum > ball){
+				return numIndPop[pop[i]];
+			}
+		}
 		return null;
 	}
 	

@@ -1,17 +1,13 @@
 public class Gene{
 	
-	public static final int GENE_SIZE = 20;//bits (50)
-	private final int TRUE_RATE = 10; //1 out of every TRUE_RATE bits will be true
-	public static final long GENE_MAX_VALUE = (long)(Math.pow(2, GENE_SIZE) - 1);
-	
-	boolean[] genotype;
+	private boolean[] genotype;
 	private long value;
 	
-	public Gene(){
+	public Gene(int size, int trueRate){
 		
-		genotype = new boolean[GENE_SIZE];
+		genotype = new boolean[size];
 		for(int i = 0; i < genotype.length; i++){
-			if((int) (TRUE_RATE*Math.random()) == 0){
+			if((int) (trueRate*Math.random()) == 0){
 				genotype[i] = true;
 			}
 			else{
@@ -22,10 +18,12 @@ public class Gene{
 	}
 	
 	public Gene(Gene g){
-		for(int i = 0; i < genotype.length; i++){
-			genotype[i] = g.genotype[i];
-		}
+		System.arraycopy(g.getGenotype(), 0, genotype, 0, g.getGenotype().length); 
 		setValue();
+	}
+	
+	public boolean[] getGenotype(){
+		return genotype;
 	}
 	
 	public String toString(){
@@ -59,8 +57,8 @@ public class Gene{
 	
 	public static void main(String[] args){
 		
-		Gene g = new Gene();
-		System.out.println(g);
+		//Gene g = new Gene();
+		//System.out.println(g);
 	}
 	
 }

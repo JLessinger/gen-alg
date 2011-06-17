@@ -1,24 +1,27 @@
 /**
 Dummy individuals. Simply a number whose value is 
-the sum of 10 30-bit numbers (genes)
+the sum of 10 20-bit numbers (genes)
 **/
 
 public class NumInd{
 	
-	public static final int CHROMOSOME_SIZE = 10;
-
-	public static final long NUMIND_MAX_FITNESS = CHROMOSOME_SIZE * NumIndGene.GENE_MAX_VALUE;
+	public static final int NUMIND_CHROMOSOME_SIZE = 10;
+	public static final int NUMIND_GENE_SIZE = 20;//bits
+	public static final int NUMIND_TRUE_RATE = 10; //1 out of every NUMIND_TRUE_RATE bits will be true
+	public static final long GENE_MAX_VALUE = (long)(Math.pow(2, NUMIND_GENE_SIZE) - 1);
+	
+	public static final long NUMIND_MAX_FITNESS = NUMIND_CHROMOSOME_SIZE * GENE_MAX_VALUE;
 
 	
 	private long numIndFitness;
-	private NumIndGene[] chromosome;
+	private Gene[] numIndChromosome;
 	
 	public String toString() {
 		
 		String s = "Num Ind:\n";
-		for(int i = 0; i < chromosome.length; i++){
-			NumIndGene g = chromosome[i];
-			s += "NumIndGene " + i + ": " + g;
+		for(int i = 0; i < numIndChromosome.length; i++){
+			Gene g = numIndChromosome[i];
+			s += "Gene " + i + ": " + g;
 			s += "\n";
 		}
 		return s;
@@ -26,21 +29,20 @@ public class NumInd{
 	
 	public NumInd() {
 		
-		chromosome = new NumIndGene[CHROMOSOME_SIZE];
-		for(int i = 0; i < chromosome.length; i++){
-			chromosome[i] = new NumIndGene();
+		numIndChromosome = new Gene[NUMIND_CHROMOSOME_SIZE];
+		for(int i = 0; i < numIndChromosome.length; i++){
+			numIndChromosome[i] = new Gene(NUMIND_GENE_SIZE, NUMIND_TRUE_RATE);
 		}
 	}
 	
-	public void setNumIndGene(int index, NumInd parent){
-		NumIndGene g = new NumIndGene(parent.chromosome[index]);
-		chromosome[index] = g;
+	public void setGene(int index, NumInd parent){
+		numIndChromosome[index] = new Gene(parent.numIndChromosome[index]);
 	}
 	public void setNumIndFitness() {
 		
 		numIndFitness = 0;
-		for(int i = 0; i < chromosome.length; i++){
-			numIndFitness += chromosome[i].getValue();//add the gene values
+		for(int i = 0; i < numIndChromosome.length; i++){
+			numIndFitness += numIndChromosome[i].getValue();//add the gene values
 		}
 	}
 	

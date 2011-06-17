@@ -1,5 +1,6 @@
 import java.util.*;
-public class Alg{
+
+public class Alg {
 	
 	final int NUMIND_POP_SIZE = 30;
 	
@@ -22,14 +23,18 @@ public class Alg{
 				     //Alg first feeds NumInd fitnesses
 				     //into a polynomial function
 				     
-	int reproductionType; //asexual, sexual, menage a trois, etc.
+	int numParents; //NOT asexual, sexual, menage a trois, etc.
+			//asexual = copying an individual, no variation
+			//numParents ³ 2
 	
 	//mutation rate stuff
+	/*still have to do this stuff*/
 	
 	/*end of variables to be optimized. think of more? these cover a lot
 	of steps in the process. add any missing, very important ones*/
 
 	public Alg() {
+		
 		sorted = new int[NUMIND_POP_SIZE];
 		numIndPop = new NumInd[NUMIND_POP_SIZE];
 		for(int i = 0; i < NUMIND_POP_SIZE; i++){
@@ -38,15 +43,18 @@ public class Alg{
 		}
 	}
 	
-	//why does this exist?
+	/**
+	Takes the population of NumInds from the parameter and makes it its own.
+	copies the population
+	same parameter for every Alg in a population in MasterAlg
+	**/
 	public Alg(Alg a) {
+		
 		sorted = new int[NUMIND_POP_SIZE];
 		for(int i = 0; i < NUMIND_POP_SIZE; i++){
 			sorted[i] = i;
 		}
-		
 		numIndPop = a.copyNumIndPop();
-		
 	}
 	
 	public String toString() {
@@ -71,7 +79,8 @@ public class Alg{
 		}
 	}
 	
-	public NumInd[] copyNumIndPop(){
+	public NumInd[] copyNumIndPop() {
+		
 		NumInd[] copy = new NumInd[NUMIND_POP_SIZE];
 		for(int i = 0; i < NUMIND_POP_SIZE; i++){
 			copy[i] = numIndPop[i];
@@ -79,8 +88,6 @@ public class Alg{
 		return copy;
 	}
 	
-
-		
 	public void setNumIndAvgFitness() {
 		
 		numIndAvgFitness = 0;
@@ -88,12 +95,13 @@ public class Alg{
 		numIndAvgFitness = numIndTotalFitness / NUMIND_POP_SIZE;
 	}
 	
-	//find best n NumInds for elitism - reserved spots
-	public void sort(int n){
-		for(int i = 0; i < n; i++){
+	//sorts the top n NumInds in population according to fitness value
+	public void sort(int n) {
+		
+		for(int i = 0; i < n; i++) {
 			int best = i;
-			for(int j = i; j < sorted.length; j++){
-				if(numIndPop[sorted[j]].getNumIndFitness() > numIndPop[sorted[best]].getNumIndFitness()){
+			for(int j = i; j < sorted.length; j++) {
+				if(numIndPop[sorted[j]].getNumIndFitness() > numIndPop[sorted[best]].getNumIndFitness()) {
 					best = j;
 				}
 			}
@@ -101,13 +109,18 @@ public class Alg{
 		}
 	}
 	
-	public void swap(int a, int b){
+	public void swap(int a, int b) {
+		
 		int tem = sorted[a];
 		sorted[a] = sorted[b];
 		sorted[b] = tem;
 	}
 	
 	public void matingSeason() {
+		
+		/*REMOVE!!!!!!!!!!!!!!*/
+		numParents = 2;
+		
 		NumInd[] temPop = new NumInd[NUMIND_POP_SIZE];
 		
 		//put the best elitism numinds at the front of sorted
@@ -119,15 +132,12 @@ public class Alg{
 		}
 		
 		//fill remaining population with offspring
-		for(int m = elitism; m < NUMIND_POP_SIZE; m++){
-			
+		for(int m = elitism; m < NUMIND_POP_SIZE; m++) {
 			//choose a certain number of parents
-			int[] parents = new int[reproductionType];
-			for(int i = 0; i < parents.length; i++){
-				/*uncomment this!*/
-				//parents[i] = selectParent(parents);
-			}
-			
+			int[] parents = new int[numParents];
+			for(int i = 0; i < parents.length; i++) {
+				parents[i] = selectParent(parents); 
+			}				
 			temPop[m] = mate(parents);
 		}
 		/*uncomment this!*/
@@ -135,21 +145,24 @@ public class Alg{
 	}
 	
 	public NumInd mate(int[] parents) {
-		//parents is the list of numIndPop indices of the parents
+		
+		//parents is the list oand oof the numIndPop indices of the parents
 		NumInd child = new NumInd();
 		for(int i = 0; i < child.CHROMOSOME_SIZE; i++){
-			NumInd parent = numIndPop[parents[(int)(parents.length*Math.random())]];
+			NumInd parent = numIndPop[parents[(int)(parents.length * Math.random())]];
 			child.setNumIndGene(i, parent);
 		}
 		return child;
 	}
 	
-	/*must not choose same parent twice for a particular mating.
-	this is not accounted for now.*/
+	/**
+	must not choose same parent twice for a particular mating.
+	this is not accounted for now.
+	**/
 	//selects a parent via hybrid roulette/tournament selection such that
 	//no mating selects a parent twice
 	//post-condition: does not return a NumInd in alreadyChosen
-	public NumInd selectParent(int[] alreadyChosen){
+	public int selectParent(int[] alreadyChosen) {
 		
 		//holds indices referring to numIndPop indices of NumInds
 		//to be considered for mating
@@ -157,16 +170,16 @@ public class Alg{
 		
 		//holds indices of all potential parents not already chosen
 		ArrayList<Integer> selectFrom = new ArrayList<Integer>();
-		for(int k = 0; k < NUMIND_POP_SIZE; k++){
-			if(!contains(alreadyChosen, k)){
+		for(int k = 0; k < NUMIND_POP_SIZE; k++) {
+			if(!contains(alreadyChosen, k)) {
 				selectFrom.add(k);
 			}
 		}
 		//if selection = NUMIND_POP_SIZE, subpop = pop and it is 
 		//simple roulette selection. Otherwise, weighted random tournament
 		for(int i = 0; i < selection; i++){
-			/*also, should not choose the same numind twice
-			to be part of the subpopulation. not accounted for.*/
+			/**also, should not choose the same numind twice
+			to be part of the subpopulation. not accounted for.**/
 			subPop[i] = selectFrom.remove((int)(selectFrom.size() * Math.random()));
 		}
 		//pre-condition: subPop does not contain any parents already selected in this
@@ -174,9 +187,11 @@ public class Alg{
 		return roulette(subPop);
 	}
 	
-	public boolean contains(int[] array, int k){
-		for(int i = 0; i < array.length; i++){
-			if(array[i]==k){
+	//return true if and only if array contains k
+	public boolean contains(int[] array, int k) {
+		
+		for(int i = 0; i < array.length; i++) {
+			if(array[i]==k) {
 				return true;
 			}
 		}
@@ -184,24 +199,27 @@ public class Alg{
 	}
 	
 	//roulette selection with array of numIndPop indices
-	public NumInd roulette(int[] pop){
+	public int roulette(int[] pop) {
+
 		setNumIndTotalFitness();
 		long ball = (long) (Math.random() * numIndTotalFitness); 
 		long sum = 0;
 		for(int i = 0; i < pop.length; i++){
-			sum += numIndPop[pop[i]].getNumIndFitness();
-			if(sum > ball){
-				return numIndPop[pop[i]];
+			sum += numIndPop[pop[i]].getNumIndFitness();/*will use distorted fitness 
+			based on Polynomial is that right? i think thats the only place it matters
+			does it matter anywhere...*/
+			if(sum > ball) {
+				return i;
 			}
 		}
-		return null;
+		return -1;
 	}
 	
 	public static void main(String[] args) {
 		
-		Alg a = new Alg();
+	/*	Alg a = new Alg();
 		System.out.println(a);
-	/*	a.setNumIndAvgFitness();
+		a.setNumIndAvgFitness();
 		System.out.println(a.numIndAvgFitness + " " + NumInd.NUMIND_MAX_FITNESS);
 		System.out.println((double)NumInd.NUMIND_MAX_FITNESS / a.numIndAvgFitness);
 		System.out.println(a.numIndPop[0]); */
@@ -215,12 +233,24 @@ public class Alg{
 		System.out.println(a.getNumInd(0));
 		System.out.println(a.getNumInd(1));
 		System.out.println(a.getNumInd(2));
-		System.out.println(kid);*/
+		System.out.println(kid);
 		
 		a.sort(3);
 		for(int i = 0; i < a.sorted.length; i++){
 			System.out.println(a.numIndPop[a.sorted[i]].getNumIndFitness());
 		}
+		*/
+		
+		Alg a = new Alg();
+		System.out.println("Alg: \n" + a + "\n");
+		
+		System.out.println(a.numIndTotalFitness);
+		
+		System.out.println(a.numIndAvgFitness);
+		
+		System.out.println(a.sorted);
+		
+		//System.out.prtintln(
 	}
 	
 }

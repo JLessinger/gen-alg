@@ -29,19 +29,14 @@ public class Alg {
 	//LIMITS: 0²elitism²NUMIND_POP_SIZE
 
 	
-	/*too complicated, too many variables, will take too long for it to become effective.
-	There is also the issue of the ceiling - 2^63 - 1, which will be hit a lot by any 
-	polynomial of degree 3 or 4.*/
-	//Polynomial fitnessPolynomial; //for the purpose of roulette selection
-				     //Alg first feeds NumInd fitnesses
-				     //into a polynomial function
+	int crossover; //number of bits to take from chosen parent before filling in gene with 
+			//bits from other parent
+			//LIMITS: -NUMIND_GENE_SIZE --> + NUMIND_GENE_SIZE
+			//if crossover<=0, it will be considered 0
+	
 
 				     
-				     
-	int numParents; //NOT asexual, sexual, menage a trois, etc.
-			//asexual = copying an individual, no variation
-			//LIMITS: numParents ³ 2
-
+				
 	//mutation rate stuff
 	float numIndMutateRate; //LIMITS: 0-1
 	float numIndchromosomeMutateRate; //LIMITS: 0-1
@@ -138,8 +133,6 @@ public class Alg {
 
 	public void matingSeason() {
 
-		/*REMOVE!!!!!!!!!!!!!!*/
-		numParents = 2;
 
 		NumInd[] temPop = new NumInd[NUMIND_POP_SIZE];
 
@@ -153,24 +146,27 @@ public class Alg {
 
 		//fill remaining population with offspring
 		for(int m = elitism; m < NUMIND_POP_SIZE; m++) {
-			//choose a certain number of parents
-			int[] parents = new int[numParents];
-			for(int i = 0; i < parents.length; i++) {
-				parents[i] = selectParent(parents); 
-			}				
-			temPop[m] = mate(parents);
+			int mother = selectParent(-1); //-1 doesnt exist but it has to take an int
+			int father = selectParent(mother); //select a father who is not the mother 
+							
+			temPop[m] = mate(mother, father);//yea?
 		}
 		/*uncomment this!*/
 		//mutate();
 	}
 
-	public NumInd mate(int[] parents) {
-
-		//parents is the list oand oof the numIndPop indices of the parents
+	public NumInd mate(int motInd, int fatInd) {
+		
+		NumInd mother = numIndPop[motInd];
+		NumInd father = numIndPop[fatInd];
 		NumInd child = new NumInd();
 		for(int i = 0; i < child.NUMIND_CHROMOSOME_SIZE; i++){
-			NumInd parent = numIndPop[parents[(int)(parents.length * Math.random())]];
-			child.setGene(i, parent);
+			if((int) (2*Math.random())==0){
+				child.setGene(i, mother, crossover, father);
+			}
+			else{
+				child.setGene(i, father, crossover, mother);
+			}
 		}
 		return child;
 	}
@@ -182,7 +178,7 @@ public class Alg {
 	//selects a parent via hybrid roulette/tournament selection such that
 	//no mating selects a parent twice
 	//post-condition: does not return a NumInd in alreadyChosen
-	public int selectParent(int[] alreadyChosen) {
+	public int selectParent(int mother) {
 
 		//holds indices referring to numIndPop indices of NumInds
 		//to be considered for mating
@@ -191,31 +187,18 @@ public class Alg {
 		//holds indices of all potential parents not already chosen
 		ArrayList<Integer> selectFrom = new ArrayList<Integer>();
 		for(int k = 0; k < NUMIND_POP_SIZE; k++) {
-			if(!contains(alreadyChosen, k)) {
+			if(k!=mother) {
 				selectFrom.add(k);
 			}
 		}
 		//if selection = NUMIND_POP_SIZE, subpop = pop and it is 
 		//simple roulette selection. Otherwise, weighted random tournament
-		for(int i = 0; i < selection; i++){
-			/**also, should not choose the same numind twice
-			to be part of the subpopulation. not accounted for.**/
+		for(int i = 0; i < selection; i++) {
 			subPop[i] = selectFrom.remove((int)(selectFrom.size() * Math.random()));
 		}
 		//pre-condition: subPop does not contain any parents already selected in this
 		//mating, and does not contain the same NumInd twice
 		return roulette(subPop);
-	}
-
-	//return true if and only if array contains k
-	public boolean contains(int[] array, int k) {
-
-		for(int i = 0; i < array.length; i++) {
-			if(array[i]==k) {
-				return true;
-			}
-		}
-		return false;
 	}
 
 	//roulette selection with array of numIndPop indices
@@ -234,14 +217,15 @@ public class Alg {
 	}
 
 	//stuff for Alg as an individual	
-	/*******/
+
+	/*
 	public void setAlgFitness(){
 		for(int i 
-	}
-
-	/*******/
-
-	public static void main(String[] args) {
+		*/
+	//}
+                                     
+	
+	public static void main(String[] args) {                         
 
 	/*	Alg a = new Alg();
 		System.out.println(a);

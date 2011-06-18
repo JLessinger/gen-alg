@@ -63,7 +63,7 @@ public class NumInd{
 		return numIndFitness;
 	}
 
-	public void numIndMutate(float chromosomeRate, float geneRate){
+	public void numIndMutate(double chromosomeRate, double geneRate){
 		for(int i = 0; i < NUMIND_CHROMOSOME_SIZE; i++){
 			if(Math.random() < chromosomeRate){
 				numIndChromosome[i].geneMutate(geneRate);

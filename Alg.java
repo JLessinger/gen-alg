@@ -13,6 +13,7 @@ public class Alg {
 				//name generic things  like "fitness"
 	private long numIndAvgFitness;	//according to the class
 	private NumInd[] numIndPop;	//to avoid confusion
+	private double changeInAvgNumIndFitness;
 	/* *******/
 	
 	
@@ -57,20 +58,19 @@ public class Alg {
 	private final int CROSSOVER_GENE_SIZE = (int) Math.ceil(Math.log(NumInd.NUMIND_CHROMOSOME_SIZE+1)/Math.log(2));
 	//number of genes to take from chosen parent before filling in chromosome with 
 			//genes from other parent
-			//LIMITS: 0 --> + NUMIND_CHROMOSOME_SIZE
-			//if crossover<=0, it will be considered 0
+			//LIMITS: 0 <= crossover <= NUMIND_CHROMOSOME_SIZE
 	
 
 				     
 				
 	//mutation rate stuff
 	//each of these genes is 10 bits. value will be divided by max (1023)
-	//to achieve a float between 0 and 1
-	private float numIndMutateRate; //LIMITS: 0-1
+	//to achieve a double between 0 and 1
+	private double numIndMutateRate; //LIMITS: 0-1
 	private final int NUMIND_MUTATE_RATE_GENE_SIZE = 10;
-	private float numIndGeneMutateRate; //LIMITS: 0-1
+	private double numIndGeneMutateRate; //LIMITS: 0-1
 	private final int NUMIND_GENE_MUTATE_RATE_GENE_SIZE = 10;
-	private float numIndGeneBitMutateRate; //LIMITS: 0-1
+	private double numIndGeneBitMutateRate; //LIMITS: 0-1
 	private final int NUMIND_GENE_BIT_MUTATE_RATE_GENE_SIZE = 10;
 
 	/*end of variables to be optimized. think of more? these cover a lot
@@ -86,6 +86,7 @@ public class Alg {
 			algChromosome[4] = new Gene(NUMIND_GENE_MUTATE_RATE_GENE_SIZE, ALG_TRUE_RATE);
 			algChromosome[5] = new Gene(NUMIND_GENE_BIT_MUTATE_RATE_GENE_SIZE, ALG_TRUE_RATE);
 		/* ***********/
+		
 		for(Gene g: algChromosome){
 			g.setValue();
 		}
@@ -94,23 +95,28 @@ public class Alg {
 		if(selection < 2){
 			selection = 2;
 		}
+		//instead of assigning all out-of-range numbers to the min or max, we could
+		//scale the range of possibly values down to the range we want
+		//selection = (int) ((double)getValue() / getMaxValue() * (NUMIND_POP_SIZE-2)) + 2;
 		if(selection > NUMIND_POP_SIZE){
 			selection = NUMIND_POP_SIZE;
 		}
 		
 		elitism = (int) algChromosome[1].getValue();
+		//elitism = (int) ((double) getValue() / getMaxValue() * NUMIND_POP_SIZE);
 		if(elitism > NUMIND_POP_SIZE){
 			elitism = NUMIND_POP_SIZE;
 		}
 		
 		crossover = (int) algChromosome[2].getValue();
+		//crossover = (int) ((double) getValue() / getMaxValue() * NumInd.NUMIND_CHROMOSOME_SIZE);
 		if(crossover > NumInd.NUMIND_CHROMOSOME_SIZE){
 			crossover = NumInd.NUMIND_CHROMOSOME_SIZE;
 		}
 		
-		numIndMutateRate = (float) algChromosome[3].getValue() / 1023;
-		numIndGeneMutateRate = (float) algChromosome[4].getValue() / 1023;
-		numIndGeneBitMutateRate = (float) algChromosome[5].getValue() / 1023;
+		numIndMutateRate = (double) algChromosome[3].getValue() / 1023;
+		numIndGeneMutateRate = (double) algChromosome[4].getValue() / 1023;
+		numIndGeneBitMutateRate = (double) algChromosome[5].getValue() / 1023;
 		
 		sorted = new int[NUMIND_POP_SIZE];
 		numIndPop = new NumInd[NUMIND_POP_SIZE];
@@ -198,7 +204,7 @@ public class Alg {
 
 	public void matingSeason() {
 
-		numInd[] oldPop = numIndPop;
+		NumInd[] oldPop = numIndPop;
 		NumInd[] temPop = new NumInd[NUMIND_POP_SIZE];
 
 		//put the best elitism numinds at the front of sorted
@@ -223,7 +229,7 @@ public class Alg {
 		
 		/** list of new individuals (with fitnesses), mean / median fitness, std dev fitness, 
 		total change in fitness, mean change in fitness*/
-		evaluate(oldPop);
+		setChangeInAvgNumIndFitness(oldPop);
 		
 		
 		
@@ -296,23 +302,21 @@ public class Alg {
 		return -1;
 	}
 	
-	public double changeInAvgFitness(NumInd[] oldPop) {
+	public void setChangeInAvgNumIndFitness(NumInd[] oldPop) {
 		
 		long oldFit = 0;
 		for(int i = 0; i < oldPop.length; i++){
 			oldFit += oldPop[i].getNumIndFitness();
 		}
 		
-		double oldAvg = oldFit / NUMIND_POP_SIZE;
-		
 		long newFit = 0;
 		for(int i = 0; i < numIndPop.length; i++){
 			newFit += this.numIndPop[i].getNumIndFitness();
 		}
 		
-		double newAvg = newFit / NUMIND_POP_SIZE;
+		double totalChange = newFit - oldFit;
 		
-		return newAvg - oldAvg;
+		changeInAvgNumIndFitness =  totalChange / NUMIND_POP_SIZE;
 	}
 
 	//stuff for Alg as an individual	

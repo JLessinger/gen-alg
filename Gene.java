@@ -1,10 +1,12 @@
 public class Gene{
 	
+	private long maxValue;
 	private boolean[] genotype;
 	private long value;
 	
 	public Gene(int size, int trueRate) {
 		
+		maxValue = (long)Math.pow(2, size)-1;
 		genotype = new boolean[size];
 		for(int i = 0; i < genotype.length; i++){
 			if((int) (trueRate*Math.random()) == 0){
@@ -26,6 +28,10 @@ public class Gene{
 	
 	public boolean[] getGenotype(){
 		return genotype;
+	}
+	
+	public long getMaxValue(){
+		return maxValue;
 	}
 	
 	public String toString() {
@@ -52,7 +58,7 @@ public class Gene{
 		}
 	}
 	
-	public void geneMutate(float geneRate) {
+	public void geneMutate(double geneRate) {
 		
 		for(int i = 0; i < genotype.length; i++){
 			if(Math.random() < geneRate){

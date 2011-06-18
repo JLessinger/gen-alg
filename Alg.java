@@ -3,6 +3,7 @@ import java.util.*;
 public class Alg {
 
 	/*Alg as a process*/
+	private final int GENERATIONS_PER_TRIAL = 100;
 	private final int NUMIND_POP_SIZE = 30;//although it is a valid variable, pop size 
 						//cannot vary between algs within
 						//a masteralg because the algs cannot be adequately
@@ -13,7 +14,7 @@ public class Alg {
 				//name generic things  like "fitness"
 	private long numIndAvgFitness;	//according to the class
 	private NumInd[] numIndPop;	//to avoid confusion
-	private double changeInAvgNumIndFitness;
+	private double c;
 	/* *******/
 	
 	
@@ -96,7 +97,7 @@ public class Alg {
 			selection = 2;
 		}
 		//instead of assigning all out-of-range numbers to the min or max, we could
-		//scale the range of possibly values down to the range we want
+		//scale the range of possible values down to the range we want
 		//selection = (int) ((double)getValue() / getMaxValue() * (NUMIND_POP_SIZE-2)) + 2;
 		if(selection > NUMIND_POP_SIZE){
 			selection = NUMIND_POP_SIZE;
@@ -141,7 +142,7 @@ public class Alg {
 		}
 		numIndPop = a.copyNumIndPop();
 	}
-
+	
 	public String toString() {
 
 		String s = "Alg:\n";
@@ -320,11 +321,14 @@ public class Alg {
 	}
 
 	//stuff for Alg as an individual	
-	/*
+	
 	public void setAlgFitness(){
-		for(int i 
-		*/
-	//}
+		algFitness = 0;
+		for(int i = 0; i < GENERATIONS_PER_TRIAL; i++){
+			matingSeason();
+			algFitness += changeInAvgNumIndFitness;
+		}
+	}
                                      
 
 

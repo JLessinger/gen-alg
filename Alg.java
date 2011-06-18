@@ -217,14 +217,14 @@ public class Alg {
 	}
 
 	//stuff for Alg as an individual	
-
 	/*
 	public void setAlgFitness(){
 		for(int i 
 		*/
 	//}
                                      
-	
+
+
 	public static void main(String[] args) {                         
 
 	/*	Alg a = new Alg();

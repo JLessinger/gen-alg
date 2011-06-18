@@ -35,9 +35,25 @@ public class NumInd{
 		}
 	}
 	
-	public void setGene(int index, NumInd parent){
-		numIndChromosome[index] = new Gene(parent.numIndChromosome[index]);
+	public Gene getGene(int index) {
+		
+		return numIndChromosome[index];
 	}
+	
+	public void setGene(int index, NumInd parent, int crossover, NumInd parentTwo) {
+		
+		numIndChromosome[index] = new Gene();
+		if (crossover < 0) {
+			crossover = 0;
+		}
+		for(int i = 0; i < crossover; i++) {//also, 
+			numIndChromosome[index].setBit(i, parent.getGene(index).getBit(i));
+		}
+		for (int j = crossover; j < NUMIND_GENE_SIZE; j++) {
+			numIndChromosome[index].setBit(j, parent.getGene(index).getBit(j));
+		}
+	}
+	
 	public void setNumIndFitness() {
 		
 		numIndFitness = 0;

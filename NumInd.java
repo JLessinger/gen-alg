@@ -41,7 +41,10 @@ public class NumInd{
 	}
 	
 
-	public void setGene(int index, NumInd parent) {		
+	public void setGene(int index, NumInd parent) {	
+		//System.out.println(parent==null);
+		//System.out.println(parent.numIndChromosome[index]==null);
+		//System.out.println(numIndChromosome[index]==null);
 		numIndChromosome[index] = new Gene(parent.numIndChromosome[index]);
 	}
 	

@@ -3,7 +3,7 @@ public class Gene{
 	private boolean[] genotype;
 	private long value;
 	
-	public Gene(int size, int trueRate){
+	public Gene(int size, int trueRate) {
 		
 		genotype = new boolean[size];
 		for(int i = 0; i < genotype.length; i++){
@@ -17,7 +17,9 @@ public class Gene{
 		setValue();
 	}
 	
-	public Gene(Gene g){
+	public Gene(Gene g) {
+		
+		genotype = new boolean[g.getGenotype().length];
 		System.arraycopy(g.getGenotype(), 0, genotype, 0, g.getGenotype().length); 
 		setValue();
 	}

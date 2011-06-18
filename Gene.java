@@ -40,7 +40,7 @@ public class Gene{
 		return s;
 	}
 	
-	private void setValue(){
+	public void setValue(){
 		
 		value = 0;
 		for(int i = 0; i < genotype.length; i++){
@@ -50,10 +50,22 @@ public class Gene{
 		}
 	}
 	
+	public void geneMutate(float geneRate){
+		for(int i = 0; i < genotype.length; i++){
+			if(Math.random() < geneRate){
+				genotype[i] = !genotype[i];
+			}
+		}
+	}
+	//unnecessary stuff
+	/*public boolean getBit(int index){
+		return genotype[index];
+	}
+	
 	public void setBit(int index, boolean value){
 		
 		genotype[index] = value; 
-	}
+	}*/
 	
 	public long getValue(){
 		

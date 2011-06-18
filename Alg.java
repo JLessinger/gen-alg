@@ -3,7 +3,7 @@ import java.util.*;
 public class Alg {
 
 	private final int NUMIND_POP_SIZE = 30;
-	private final int TRUE_RATE = 10;
+	private final int ALG_TRUE_RATE = 10;
 	private long numIndTotalFitness;
 	private int[] sorted; //indices of NumInds in pop. in order of fitness
 				//sorted[0] = best
@@ -15,7 +15,7 @@ public class Alg {
 	/*variables to be optimized*/
 	
 	/*chromosome holds genes which set these instance variables*/
-	
+	Gene[] AlgChromosome;
 	//all have natural limits, but will be allowed to vary freely within them 
 	//just like NumInd genes have a natural limit according to their size
 	
@@ -59,6 +59,8 @@ public class Alg {
 			numIndPop[i] = new NumInd();
 			sorted[i] = i;
 		}
+		
+		
 	}
 
 	/**
@@ -230,6 +232,14 @@ public class Alg {
 		}
 		return -1;
 	}
+
+	//stuff for Alg as an individual	
+	/*******/
+	public void setAlgFitness(){
+		for(int i 
+	}
+
+	/*******/
 
 	public static void main(String[] args) {
 

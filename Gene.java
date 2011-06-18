@@ -26,7 +26,7 @@ public class Gene{
 		return genotype;
 	}
 	
-	public String toString(){
+	public String toString() {
 		
 		setValue();
 		String s = "" + value + " ";
@@ -40,25 +40,34 @@ public class Gene{
 		return s;
 	}
 	
-	private void setValue(){
+	public void setValue() {
 		
 		value = 0;
 		for(int i = 0; i < genotype.length; i++){
-			if(genotype[i]){     
+			if(genotype[i]){
 				value += Math.pow(2, (genotype.length - i - 1));
 			}
 		}
 	}
 	
-	public boolean getBit(int index) {
+	public void geneMutate(float geneRate) {
 		
+		for(int i = 0; i < genotype.length; i++){
+			if(Math.random() < geneRate){
+				genotype[i] = !genotype[i];
+			}
+		}
+	}
+	
+	//unnecessary stuff
+	/*public boolean getBit(int index) {
+	
 		return genotype[index];
 	}
 	
 	public void setBit(int index, boolean value){
-		
-		genotype[index] = value; 
-	}
+		genotype[index] = value;
+	}*/
 	
 	public long getValue(){
 		

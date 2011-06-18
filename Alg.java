@@ -2,52 +2,116 @@ import java.util.*;
 
 public class Alg {
 
-	private final int NUMIND_POP_SIZE = 30;
-	private final int ALG_TRUE_RATE = 10;
+	/*Alg as a process*/
+	private final int NUMIND_POP_SIZE = 30;//although it is a valid variable, pop size 
+						//cannot vary between algs within
+						//a masteralg because the algs cannot be adequately
+						//compared without identical populations
 	private long numIndTotalFitness;
 	private int[] sorted; //indices of NumInds in pop. in order of fitness
 				//sorted[0] = best
-	private long algFitness; 	//name generic things  like "fitness"
+				//name generic things  like "fitness"
 	private long numIndAvgFitness;	//according to the class
 	private NumInd[] numIndPop;	//to avoid confusion
-
-
+	/* *******/
+	
+	
+	/*Alg as an individual*/
+	private long algFitness; 
+	private final int ALG_CHROMOSOME_SIZE = 6;
+	private final int ALG_TRUE_RATE = 2;
+	/* ******/
+	
+	
+	
 	/*variables to be optimized*/
 	
-	/*chromosome holds genes which set these instance variables*/
-	Gene[] AlgChromosome;
+	//chromosome holds genes which set these instance variables
+	Gene[] algChromosome;
+	/*gene listing
+	* 0 = selection
+	* 1 = elitism
+	* 2 = crossover
+	* 3 = numIndMutateRate
+	* 4 = numIndGeneMutateRate
+	* 5 = numIndGeneBitMutateRate
+	*/
 	//all have natural limits, but will be allowed to vary freely within them 
 	//just like NumInd genes have a natural limit according to their size
 	
-	int selection; //roulette selection on a subpopulation of what size?
+	private int selection;
+	private final int SELECTION_GENE_SIZE = (int) Math.ceil(Math.log(NUMIND_POP_SIZE+1)/Math.log(2));
+	//roulette selection on a subpopulation of what size?
 		       //smaller populations are like randomized tournament selection
 		       // 2²selection²NUMIND_POP_SIZE
 		       //if select = 2, roulette selection on 2 randomly selected
 		       //if selected = NUMIND_POP_SIZE, normal roulette
 
-	int elitism;//how many of the best are reserved spots?
+	private int elitism;
+	private final int ELITISM_GENE_SIZE = (int) Math.ceil(Math.log(NUMIND_POP_SIZE+1)/Math.log(2));
+	//how many of the best are reserved spots?
 	//LIMITS: 0²elitism²NUMIND_POP_SIZE
 
 	
-	int crossover; //number of bits to take from chosen parent before filling in gene with 
-			//bits from other parent
-			//LIMITS: -NUMIND_GENE_SIZE --> + NUMIND_GENE_SIZE
+	private int crossover; 
+	private final int CROSSOVER_GENE_SIZE = (int) Math.ceil(Math.log(NumInd.NUMIND_CHROMOSOME_SIZE+1)/Math.log(2));
+	//number of genes to take from chosen parent before filling in chromosome with 
+			//genes from other parent
+			//LIMITS: 0 --> + NUMIND_CHROMOSOME_SIZE
 			//if crossover<=0, it will be considered 0
 	
 
 				     
 				
 	//mutation rate stuff
-	float numIndMutateRate; //LIMITS: 0-1
-	float numIndchromosomeMutateRate; //LIMITS: 0-1
-	float GeneMutateRate; //LIMITS: 0-1
-	/*still have to do this stuff*/
+	//each of these genes is 10 bits. value will be divided by max (1023)
+	//to achieve a float between 0 and 1
+	private float numIndMutateRate; //LIMITS: 0-1
+	private final int NUMIND_MUTATE_RATE_GENE_SIZE = 10;
+	private float numIndGeneMutateRate; //LIMITS: 0-1
+	private final int NUMIND_GENE_MUTATE_RATE_GENE_SIZE = 10;
+	private float numIndGeneBitMutateRate; //LIMITS: 0-1
+	private final int NUMIND_GENE_BIT_MUTATE_RATE_GENE_SIZE = 10;
 
 	/*end of variables to be optimized. think of more? these cover a lot
 	of steps in the process. add any missing, very important ones*/
 
 	public Alg() {
-
+		/*Alg as an individual*/
+			algChromosome = new Gene[ALG_CHROMOSOME_SIZE];
+			algChromosome[0] = new Gene(SELECTION_GENE_SIZE, ALG_TRUE_RATE);
+			algChromosome[1] = new Gene(ELITISM_GENE_SIZE, ALG_TRUE_RATE);
+			algChromosome[2] = new Gene(CROSSOVER_GENE_SIZE, ALG_TRUE_RATE);
+			algChromosome[3] = new Gene(NUMIND_MUTATE_RATE_GENE_SIZE, ALG_TRUE_RATE);
+			algChromosome[4] = new Gene(NUMIND_GENE_MUTATE_RATE_GENE_SIZE, ALG_TRUE_RATE);
+			algChromosome[5] = new Gene(NUMIND_GENE_BIT_MUTATE_RATE_GENE_SIZE, ALG_TRUE_RATE);
+		/* ***********/
+		for(Gene g: algChromosome){
+			g.setValue();
+		}
+		/*set instance variables to gene values. correct them if they are outside natural limits*/
+		selection = (int) algChromosome[0].getValue();
+		if(selection < 2){
+			selection = 2;
+		}
+		if(selection > NUMIND_POP_SIZE){
+			selection = NUMIND_POP_SIZE;
+		}
+		
+		elitism = (int) algChromosome[1].getValue();
+		if(elitism > NUMIND_POP_SIZE){
+			elitism = NUMIND_POP_SIZE;
+		}
+		
+		crossover = (int) algChromosome[2].getValue();
+		if(crossover > NumInd.NUMIND_CHROMOSOME_SIZE){
+			crossover = NumInd.NUMIND_CHROMOSOME_SIZE;
+		}
+		
+		numIndMutateRate = (float) algChromosome[3].getValue() / 1023;
+		numIndGeneMutateRate = (float) algChromosome[4].getValue() / 1023;
+		numIndGeneBitMutateRate = (float) algChromosome[5].getValue() / 1023;
+		
 		sorted = new int[NUMIND_POP_SIZE];
 		numIndPop = new NumInd[NUMIND_POP_SIZE];
 		for(int i = 0; i < NUMIND_POP_SIZE; i++){
@@ -153,23 +217,30 @@ public class Alg {
 			temPop[m] = mate(mother, father);//yea?
 		}
 		numIndPop = temPop;
-		
+
 		/*uncomment this!*/
 		//algMutate();
 	}
 
+	public void algMutate(){
+		for(int i = 0; i < NUMIND_POP_SIZE; i++){
+			if(Math.random() < numIndMutateRate){
+				numIndPop[i].numIndMutate(numIndGeneMutateRate, numIndGeneBitMutateRate);
+			}
+		}
+	}
+	
 	public NumInd mate(int motInd, int fatInd) {
 		
 		NumInd mother = numIndPop[motInd];
 		NumInd father = numIndPop[fatInd];
 		NumInd child = new NumInd();
-		for(int i = 0; i < child.NUMIND_CHROMOSOME_SIZE; i++){
-			if((int) (2*Math.random())==0){
-				child.setGene(i, mother, crossover, father);
-			}
-			else{
-				child.setGene(i, father, crossover, mother);
-			}
+		int i = 0;
+		for(; i < crossover; i++){
+			child.setGene(i, mother);
+		}
+		for(; i < NumInd.NUMIND_CHROMOSOME_SIZE; i++){
+			child.setGene(i, father);
 		}
 		return child;
 	}
@@ -231,7 +302,7 @@ public class Alg {
 		*/
 	//}
                                      
-	
+
 
 	public static void main(String[] args) {                         
 

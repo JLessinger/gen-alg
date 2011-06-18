@@ -40,18 +40,9 @@ public class NumInd{
 		return numIndChromosome[index];
 	}
 	
-	public void setGene(int index, NumInd parent, int crossover, NumInd parentTwo) {
-		
-		numIndChromosome[index] = new Gene(NUMIND_CHROMOSOME_SIZE, 0);
-		if (crossover < 0) {
-			crossover = 0;
-		}
-		for(int i = 0; i < crossover; i++) {//also, 
-			numIndChromosome[index].setBit(i, parent.getGene(index).getBit(i));
-		}
-		for (int j = crossover; j < NUMIND_GENE_SIZE; j++) {
-			numIndChromosome[index].setBit(j, parent.getGene(index).getBit(j));
-		}
+
+	public void setGene(int index, NumInd parent) {		
+		numIndChromosome[index] = new Gene(parent.numIndChromosome[index]);
 	}
 	
 	public void setNumIndFitness() {
@@ -69,6 +60,14 @@ public class NumInd{
 		return numIndFitness;
 	}
 
+	public void numIndMutate(float chromosomeRate, float geneRate){
+		for(int i = 0; i < NUMIND_CHROMOSOME_SIZE; i++){
+			if(Math.random() < chromosomeRate){
+				numIndChromosome[i].geneMutate(geneRate);
+			}
+		}
+	}
+	
 	public static void main(String[] args) {
 		
 		NumInd n = new NumInd();

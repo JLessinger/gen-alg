@@ -42,7 +42,7 @@ public class NumInd{
 	
 	public void setGene(int index, NumInd parent, int crossover, NumInd parentTwo) {
 		
-		numIndChromosome[index] = new Gene();
+		numIndChromosome[index] = new Gene(NUMIND_CHROMOSOME_SIZE, 0);
 		if (crossover < 0) {
 			crossover = 0;
 		}

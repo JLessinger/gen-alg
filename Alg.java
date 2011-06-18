@@ -82,7 +82,8 @@ public class Alg {
 		return s;
 	}
 
-	public NumInd getNumInd(int index){
+	public NumInd getNumInd(int index) {
+
 		return numIndPop[index];
 	}
 
@@ -151,8 +152,10 @@ public class Alg {
 							
 			temPop[m] = mate(mother, father);//yea?
 		}
+		numIndPop = temPop;
+		
 		/*uncomment this!*/
-		//mutate();
+		//algMutate();
 	}
 
 	public NumInd mate(int motInd, int fatInd) {
@@ -203,9 +206,14 @@ public class Alg {
 
 	//roulette selection with array of numIndPop indices
 	public int roulette(int[] pop) {
-
+		for(int in = 0; in < pop.length; in++){
+			System.out.println("pop" + pop[in]);
+		} 
 		setNumIndTotalFitness();
+		System.out.println("total fitness" + numIndTotalFitness);
+		
 		long ball = (long) (Math.random() * numIndTotalFitness); 
+		System.out.println("ball" + ball);
 		long sum = 0;
 		for(int i = 0; i < pop.length; i++){
 			sum += numIndPop[pop[i]].getNumIndFitness();
@@ -262,7 +270,16 @@ public class Alg {
 		Alg a = new Alg();
 		System.out.println(a);
 
-		//System.out.prtintln(
+		System.out.println("average: " + a.numIndAvgFitness);
+		System.out.println("one parent: " + a.numIndPop[4]);
+		
+		a.selection = 14;//subpop = 14
+		int x = a.selectParent(4);
+		a.crossover = 14;
+		System.out.println("second one: " + x);
+		
+		System.out.println(a.mate(4,x));
+		
 	}
 
 }

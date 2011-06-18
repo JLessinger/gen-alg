@@ -50,6 +50,11 @@ public class Gene{
 		}
 	}
 	
+	public boolean getBit(int index) {
+		
+		return genotype[index];
+	}
+	
 	public void setBit(int index, boolean value){
 		
 		genotype[index] = value; 

@@ -78,47 +78,8 @@ public class Alg {
 	of steps in the process. add any missing, very important ones*/
 
 	public Alg() {
-		/*Alg as an individual*/
-			algChromosome = new Gene[ALG_CHROMOSOME_SIZE];
-			algChromosome[0] = new Gene(SELECTION_GENE_SIZE, ALG_TRUE_RATE);
-			algChromosome[1] = new Gene(ELITISM_GENE_SIZE, ALG_TRUE_RATE);
-			algChromosome[2] = new Gene(CROSSOVER_GENE_SIZE, ALG_TRUE_RATE);
-			algChromosome[3] = new Gene(NUMIND_MUTATE_RATE_GENE_SIZE, ALG_TRUE_RATE);
-			algChromosome[4] = new Gene(NUMIND_GENE_MUTATE_RATE_GENE_SIZE, ALG_TRUE_RATE);
-			algChromosome[5] = new Gene(NUMIND_GENE_BIT_MUTATE_RATE_GENE_SIZE, ALG_TRUE_RATE);
-		/* ***********/
 		
-		for(Gene g: algChromosome){
-			g.setValue();
-		}
-		/*set instance variables to gene values. correct them if they are outside natural limits*/
-		selection = (int) algChromosome[0].getValue();
-		if(selection < 2){
-			selection = 2;
-		}
-		//instead of assigning all out-of-range numbers to the min or max, we could
-		//scale the range of possible values down to the range we want
-		//selection = (int) ((double)getValue() / getMaxValue() * (NUMIND_POP_SIZE-2)) + 2;
-		if(selection > NUMIND_POP_SIZE){
-			selection = NUMIND_POP_SIZE;
-		}
-		
-		elitism = (int) algChromosome[1].getValue();
-		//elitism = (int) ((double) getValue() / getMaxValue() * NUMIND_POP_SIZE);
-		if(elitism > NUMIND_POP_SIZE){
-			elitism = NUMIND_POP_SIZE;
-		}
-		
-		crossover = (int) algChromosome[2].getValue();
-		//crossover = (int) ((double) getValue() / getMaxValue() * NumInd.NUMIND_CHROMOSOME_SIZE);
-		if(crossover > NumInd.NUMIND_CHROMOSOME_SIZE){
-			crossover = NumInd.NUMIND_CHROMOSOME_SIZE;
-		}
-		
-		numIndMutateRate = (double) algChromosome[3].getValue() / 1023;
-		numIndGeneMutateRate = (double) algChromosome[4].getValue() / 1023;
-		numIndGeneBitMutateRate = (double) algChromosome[5].getValue() / 1023;
-		
+		setVariables();
 		sorted = new int[NUMIND_POP_SIZE];
 		numIndPop = new NumInd[NUMIND_POP_SIZE];
 		for(int i = 0; i < NUMIND_POP_SIZE; i++){
@@ -135,12 +96,48 @@ public class Alg {
 	same parameter for every Alg in a population in MasterAlg
 	**/
 	public Alg(Alg a) {
-
+		setVariables();
 		sorted = new int[NUMIND_POP_SIZE];
 		for(int i = 0; i < NUMIND_POP_SIZE; i++){
 			sorted[i] = i;
 		}
 		numIndPop = a.copyNumIndPop();
+	}
+
+	public void setVariables(){
+		/**Set Genes in Alg's chromosome*/
+		algChromosome = new Gene[ALG_CHROMOSOME_SIZE];
+		algChromosome[0] = new Gene(SELECTION_GENE_SIZE, ALG_TRUE_RATE);
+		algChromosome[1] = new Gene(ELITISM_GENE_SIZE, ALG_TRUE_RATE);
+		algChromosome[2] = new Gene(CROSSOVER_GENE_SIZE, ALG_TRUE_RATE);
+		algChromosome[3] = new Gene(NUMIND_MUTATE_RATE_GENE_SIZE, ALG_TRUE_RATE);
+		algChromosome[4] = new Gene(NUMIND_GENE_MUTATE_RATE_GENE_SIZE, ALG_TRUE_RATE);
+		algChromosome[5] = new Gene(NUMIND_GENE_BIT_MUTATE_RATE_GENE_SIZE, ALG_TRUE_RATE);
+		
+		
+
+		for(Gene g: algChromosome){
+			g.setValue();
+		}
+
+		/**set instance variables to gene values. Scale them so they are not outside natural limits*/
+
+		selection = (int) algChromosome[0].getValue();
+		if(selection < 2){
+			selection = 2;
+		}
+		selection = (int) ((double) algChromosome[0].getValue() / algChromosome[0].getMaxValue() * (NUMIND_POP_SIZE-2)) + 2;
+
+		elitism = (int) ((double) algChromosome[1].getValue() / algChromosome[1].getMaxValue() * NUMIND_POP_SIZE);
+
+		crossover = (int) ((double) algChromosome[2].getValue() / algChromosome[2].getMaxValue() * NumInd.NUMIND_CHROMOSOME_SIZE);
+
+		numIndMutateRate = (double) algChromosome[3].getValue() / 1023;
+
+		numIndGeneMutateRate = (double) algChromosome[4].getValue() / 1023;
+
+		numIndGeneBitMutateRate = (double) algChromosome[5].getValue() / 1023;
+
 	}
 	
 	public String toString() {

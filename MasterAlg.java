@@ -7,5 +7,6 @@ class MasterAlg{
 	public MasterAlg() {
 		
 		algPop = new Alg[ALG_POP_SIZE];
+		
 	}
 }

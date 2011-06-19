@@ -4,7 +4,7 @@ public class Alg {
 
 
 	/*Alg as a process*/
-	private final int GENERATIONS_PER_TRIAL = 100;
+	public static final int GENERATIONS_PER_TRIAL = 100;
 
 	public static final int NUMIND_POP_SIZE = 30;//although it is a valid variable, pop size 
 						//cannot vary between algs within
@@ -111,6 +111,23 @@ public class Alg {
 		numIndPop = a.copyNumIndPop();
 	}
 	
+	/**for the control alg with a big population*/
+	public Alg(int size, int select, int elite, int cross, double rate1, double rate2, double rate3) {
+		
+		numIndPop = new NumInd[size];
+		selection = select;
+		elitism = elite;
+		crossover = cross;
+		numIndMutateRate = rate1;
+		numIndGeneMutateRate = rate2;
+		numIndGeneBitMutateRate = rate3;
+		numIndsSorted = new int[size];
+		for(int i = 0; i < size; i++){
+			numIndPop[i] = new NumInd();
+			numIndsSorted[i] = i;
+		}
+	}
+	
 	public String toString() {
 
 		String s = "\nAlg:\n";
@@ -197,6 +214,8 @@ public class Alg {
 			//System.out.print("chang" + changeInAvgNumIndFitness + " ");
 			algFitness += changeInAvgNumIndFitness;//set algFitness instance var
 		}
+		if(algFitness < 0)
+			algFitness = 0;
 	}				
 	
 	public void setNumIndTotAvgFitness() {

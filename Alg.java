@@ -2,7 +2,10 @@ import java.util.*;
 
 public class Alg {
 
-	/**Alg as a process*/
+
+	/*Alg as a process*/
+	private final int GENERATIONS_PER_TRIAL = 100;
+
 	private final int NUMIND_POP_SIZE = 30;//although it is a valid variable, pop size 
 						//cannot vary between algs within
 						//a masteralg because the algs cannot be adequately
@@ -11,8 +14,9 @@ public class Alg {
 	private int[] sorted; //indices of NumInds in pop in order of fitness
 				//sorted[0] = best
 				
-	private long numIndAvgFitness;	//according to the class
+	private double numIndAvgFitness;	//according to the class
 	private NumInd[] numIndPop;	//to avoid confusion
+
 	private double changeInAvgNumIndFitness;
 	private long changeInTotNumIndFitness;
 	/*********/
@@ -21,7 +25,8 @@ public class Alg {
 	/**Alg as an individual*/
 	private long algFitness; 
 	private final int ALG_CHROMOSOME_SIZE = 6;
-	private final int ALG_TRUE_RATE = 2;
+	private final int ALG_TRUE_RATE = 4;
+	//private final int ALG_TRUE_RATE = 2;
 	/********/
 	
 	
@@ -94,7 +99,7 @@ public class Alg {
 	same parameter for every Alg in a population in MasterAlg
 	**/
 	public Alg(Alg a) {
-		
+
 		setVariables();
 		sorted = new int[NUMIND_POP_SIZE];
 		for(int i = 0; i < NUMIND_POP_SIZE; i++){
@@ -103,18 +108,7 @@ public class Alg {
 		numIndPop = a.copyNumIndPop();
 	}
 
-	public String toString() {
-
-		String s = "Alg:\n";
-		for(int i = 0; i < numIndPop.length; i++){
-			NumInd n = numIndPop[i];
-			s += "NumInd " + (i) + ": fitness = " + n.getNumIndFitness() + "\n";
-		}
-		return s;
-	}
-	
 	public void setVariables(){
-		
 		/**Set Genes in Alg's chromosome*/
 		algChromosome = new Gene[ALG_CHROMOSOME_SIZE];
 		algChromosome[0] = new Gene(SELECTION_GENE_SIZE, ALG_TRUE_RATE);
@@ -124,27 +118,45 @@ public class Alg {
 		algChromosome[4] = new Gene(NUMIND_GENE_MUTATE_RATE_GENE_SIZE, ALG_TRUE_RATE);
 		algChromosome[5] = new Gene(NUMIND_GENE_BIT_MUTATE_RATE_GENE_SIZE, ALG_TRUE_RATE);
 		
+		
+
 		for(Gene g: algChromosome){
 			g.setValue();
 		}
-		
+
 		/**set instance variables to gene values. Scale them so they are not outside natural limits*/
-		selection = (int) algChromosome[0].getValue();
-		if(selection < 2){
-		
-			selection = 2;
-		}
+
 		selection = (int) ((double) algChromosome[0].getValue() / algChromosome[0].getMaxValue() * (NUMIND_POP_SIZE-2)) + 2;
-		
+
 		elitism = (int) ((double) algChromosome[1].getValue() / algChromosome[1].getMaxValue() * NUMIND_POP_SIZE);
 		
 		crossover = (int) ((double) algChromosome[2].getValue() / algChromosome[2].getMaxValue() * NumInd.NUMIND_CHROMOSOME_SIZE);
-		
+
 		numIndMutateRate = (double) algChromosome[3].getValue() / 1023;
-		
+
 		numIndGeneMutateRate = (double) algChromosome[4].getValue() / 1023;
-		
+
 		numIndGeneBitMutateRate = (double) algChromosome[5].getValue() / 1023;
+
+	}
+	
+	public String toString() {
+
+		String s = "Alg:\n";
+		s += "\nselection:" + selection + "\nelitism:" + elitism + "\ncrossover:" + crossover
+		+ "\nnumIndMutateRate:" + numIndMutateRate + "\nnumIndGeneMutateRate:" + numIndGeneMutateRate
+		+ "\nnumIndGeneBitMutateRate:" + numIndGeneBitMutateRate //+ "\nnumber of bit mutations expected"
+		//+ NUMIND_POP_SIZE * NumInd.NUMIND_CHROMOSOME_SIZE * NumInd.NUMIND_GENE_SIZE 
+		//* numIndMutateRate * numIndGeneMutateRate * numIndGeneBitMutateRate  
+		+ "\n\n";
+		for(int i = 0; i < numIndPop.length; i++){
+			NumInd n = numIndPop[i];
+			s += "NumInd " + (i) + ": fitness = " + n.getNumIndFitness() + "\n";
+		}
+		setNumIndTotAvgFitness();
+		s += "\nTotal NumInd Fitness = " + numIndTotalFitness + "\n";
+		s += "Average NumInd Fitness = " + numIndAvgFitness;
+		return s;
 	}
 
 	public NumInd getNumInd(int index) {
@@ -169,7 +181,7 @@ public class Alg {
 		}
 		
 		numIndAvgFitness = 0;
-		numIndAvgFitness =  numIndTotalFitness / NUMIND_POP_SIZE;
+		numIndAvgFitness =  (double)numIndTotalFitness / NUMIND_POP_SIZE;
 	}
 	
 	public void setChangeInTotAvgNumIndFitness(NumInd[] oldPop) {
@@ -248,13 +260,13 @@ public class Alg {
 		}
 		numIndPop = temPop;
 
-		/*uncomment this!*/
-		//algMutate();
+		algMutate();
 		
 		/** list of new individuals (with fitnesses), mean / median fitness, std dev fitness, 
 		total change in fitness, mean change in fitness*/
 		setNumIndTotAvgFitness();
 		setChangeInTotAvgNumIndFitness(oldPop);
+		System.out.println("matingseason");
 		System.out.println("oldpop average fitness: " + oldAvg);
 		System.out.println("newpop average fitness: " + numIndAvgFitness);
 		System.out.println("change in average fitness: " + changeInAvgNumIndFitness);
@@ -308,10 +320,14 @@ public class Alg {
 				selectFrom.add(k);
 			}
 		}
+		//System.out.println("selectfrom" + selectFrom);
 		//if selection = NUMIND_POP_SIZE, subpop = pop and it is 
 		//simple roulette selection. Otherwise, weighted random tournament
+
 		for(int i = 0; i < selection; i++) {
-			subPop[i] = selectFrom.remove((int)(selectFrom.size() * Math.random()));
+			if(selectFrom.size()>0){
+				subPop[i] = selectFrom.remove((int)(selectFrom.size() * Math.random()));
+			}
 		}
 		//pre-condition: subPop does not contain any parents already selected in this
 		//mating, and does not contain the same NumInd twice
@@ -335,11 +351,14 @@ public class Alg {
 	
 	
 	//stuff for Alg as an individual	
-	/*
+	
 	public void setAlgFitness(){
-		for(int i 
-		*/
-	//}
+		algFitness = 0;
+		for(int i = 0; i < GENERATIONS_PER_TRIAL; i++){
+			matingSeason();
+			algFitness += changeInAvgNumIndFitness;
+		}
+	}
                                      
 
 
@@ -399,12 +418,20 @@ public class Alg {
 		*/
 		
 		Alg a = new Alg();
-		System.out.println(a);
-		a.setNumIndTotAvgFitness();
-		System.out.println("Average Fitness: " + a.numIndAvgFitness);
-		a.matingSeason();
+		/*System.out.println("old population\n\n");
 		System.out.println(a);
 		
+		a.setNumIndTotAvgFitness();
+		//System.out.println("main");
+		//System.out.println("Average Fitness: " + a.numIndAvgFitness);
+		a.matingSeason();
+		System.out.println("new population\n\n");
+		System.out.println(a);*/
+		
+		System.out.println(a);
+		a.setAlgFitness();//does 100 mating seasons, changing alg's population
+		System.out.println(a);
+		System.out.println(a.algFitness);
 	}
 
 }

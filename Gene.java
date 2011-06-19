@@ -59,10 +59,11 @@ public class Gene{
 	}
 	
 	public void geneMutate(double geneRate) {
-		
+		//System.out.println();
 		for(int i = 0; i < genotype.length; i++){
 			if(Math.random() < geneRate){
 				genotype[i] = !genotype[i];
+			//	System.out.println("mutated " + this);
 			}
 		}
 	}

@@ -67,16 +67,21 @@ class MasterAlg{
 	/**ACCESSORS AND MUTATORS**********************************************/
 	
 	//assumes setAlgFitness() and algSort(1) have been called IN THAT ORDER
-	public void setInstanceVars(){
+	public void setInstanceVars() {
 		
 		Alg best = algPop[algsSorted[0]];
 		selection = best.getSelection();
+		selection = (int)((double)selection * ALG_POP_SIZE / Alg.NUMIND_POP_SIZE);
+		if(selection < 2)
+			selection = 2;
 		elitism = best.getElitism();
+		elitism = (int)((double)elitism * ALG_POP_SIZE / Alg.NUMIND_POP_SIZE);
 		crossover = best.getCrossover();
+		crossover = (int)((double)crossover * Alg.ALG_CHROMOSOME_SIZE / NumInd.NUMIND_CHROMOSOME_SIZE);
 		algMutateRate = best.getNumIndMutateRate();
 		algGeneMutateRate = best.getNumIndGeneMutateRate();
 		algGeneBitMutateRate = best.getNumIndGeneBitMutateRate();
-	}
+	}	
 	
 	public Alg getAlg(int index) {
 
@@ -103,8 +108,10 @@ class MasterAlg{
 		long end = 0;
 		for (int i = 0; i < subPop.length; i++) {
 			long algFit = algPop[subPop[i]].getAlgFitness();
+			if (algFit < 0)
+				algFit = 0;
 			end += algFit;//Assumes setAlgFitness has already been called 
-			System.out.println(algFit);
+			System.out.println("algfit" + subPop[i] + " " + algFit);
 		}							/*MAKE SURE THIS HAPPENS IN MATING SEASON*/
 		//what
 		return end;
@@ -240,14 +247,21 @@ class MasterAlg{
 		
 		long subPopTot = setSubPopTotalFitness(pop);
 		long ball = (long) (Math.random() * subPopTot);
+		System.out.println("ball" + ball);
 		long sum = 0;
 		System.out.println("subPopTot" + subPopTot);
 		for(int i = 0; i < pop.length; i++){
-			sum += algPop[pop[i]].getAlgFitness();
-			if(sum > ball) {
+			long fit = algPop[pop[i]].getAlgFitness();
+			if (fit < 0)
+				fit = 0;
+			sum += fit;
+			System.out.println("sum" + sum);
+			if(sum >= ball) {
+				System.out.println("here2");
 				return i;
 			}
 		}
+		System.out.println("here");
 		return -1;
 	}
 	

@@ -6,7 +6,7 @@ public class Alg {
 	/*Alg as a process*/
 	private final int GENERATIONS_PER_TRIAL = 100;
 
-	private final int NUMIND_POP_SIZE = 30;//although it is a valid variable, pop size 
+	public static final int NUMIND_POP_SIZE = 30;//although it is a valid variable, pop size 
 						//cannot vary between algs within
 						//a masteralg because the algs cannot be adequately
 						//compared without identical populations

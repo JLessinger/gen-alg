@@ -71,8 +71,13 @@ class MasterAlg{
 		
 		Alg best = algPop[algsSorted[0]];
 		selection = best.getSelection();
+		selection = (int)((double)selection * ALG_POP_SIZE / Alg.NUMIND_POP_SIZE);
+		if(selection < 2)
+			selection = 2;
 		elitism = best.getElitism();
+		elitism = (int)((double)elitism * ALG_POP_SIZE / Alg.NUMIND_POP_SIZE);
 		crossover = best.getCrossover();
+		crossover = (int)((double)crossover * Alg.ALG_CHROMOSOME_SIZE / NumInd.NUMIND_CHROMOSOME_SIZE);
 		algMutateRate = best.getNumIndMutateRate();
 		algGeneMutateRate = best.getNumIndGeneMutateRate();
 		algGeneBitMutateRate = best.getNumIndGeneBitMutateRate();
@@ -104,7 +109,7 @@ class MasterAlg{
 		for (int i = 0; i < subPop.length; i++) {
 			long algFit = algPop[subPop[i]].getAlgFitness();
 			end += algFit;//Assumes setAlgFitness has already been called 
-			System.out.println(algFit);
+			//System.out.println(algFit);
 		}							/*MAKE SURE THIS HAPPENS IN MATING SEASON*/
 		//what
 		return end;
@@ -160,15 +165,18 @@ class MasterAlg{
 		
 		setAlgTotAvgFitness();//calls setAlgFitness 
 		
-		algSort(1);//puts index of best alg at position 0 in algsSorted
-		Alg best = algPop[algsSorted[0]];//makes best point Alg with highest fitness 
-		
+		if(elitism > 0){
+			//put the best elitism Algs at the front of algsSorted
+			algSort(elitism);
+		}
+		else{
+			algSort(1);//puts index of best alg at position 0 in algsSorted
+		}
 		setInstanceVars();
 		
 		Alg[] temPop = new Alg[ALG_POP_SIZE];
 
-		//put the best elitism Algs at the front of algsSorted
-		algSort(elitism);
+
 
 		//fill temPop with the algsSorted numinds
 		for(int k = 0; k < elitism; k++){
@@ -237,14 +245,16 @@ class MasterAlg{
 	
 	//algRoulette selection with array of algPop indices
 	public int algRoulette(int[] pop) {
-		
+		System.out.println("roulette");
 		long subPopTot = setSubPopTotalFitness(pop);
 		long ball = (long) (Math.random() * subPopTot);
 		long sum = 0;
-		System.out.println("subPopTot" + subPopTot);
 		for(int i = 0; i < pop.length; i++){
 			sum += algPop[pop[i]].getAlgFitness();
-			if(sum > ball) {
+			System.out.println("sum" + sum);
+			if(sum >= ball) {
+				System.out.println(pop.length);
+				System.out.println("sum " + sum + " ball " + ball);
 				return i;
 			}
 		}
@@ -270,6 +280,7 @@ class MasterAlg{
 		
 		MasterAlg m = new MasterAlg();
 		System.out.println(m);
+		System.out.println("\n\n");
 		m.algMatingSeason();
 		System.out.println(m);
 	}

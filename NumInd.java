@@ -17,8 +17,9 @@ public class NumInd{
 	private Gene[] numIndChromosome;
 	
 	public String toString() {
-		
+		setNumIndFitness();
 		String s = "Num Ind:\n";
+		s += "Fitness = " + numIndFitness + "\n";
 		for(int i = 0; i < numIndChromosome.length; i++){
 			Gene g = numIndChromosome[i];
 			s += "Gene " + i + ": " + g;

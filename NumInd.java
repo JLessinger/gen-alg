@@ -49,10 +49,8 @@ public class NumInd{
 	}
 	
 
-	public void setGene(int index, NumInd parent) {	
-		//System.out.println(parent==null);
-		//System.out.println(parent.numIndChromosome[index]==null);
-		//System.out.println(numIndChromosome[index]==null);
+	public void setNumIndGene(int index, NumInd parent) {
+		
 		numIndChromosome[index] = new Gene(parent.numIndChromosome[index]);
 	}
 	
@@ -71,6 +69,7 @@ public class NumInd{
 		return numIndFitness;
 	}
 
+	//Mutates the calling NumInd
 	public void numIndMutate(double chromosomeRate, double geneRate){
 		for(int i = 0; i < NUMIND_CHROMOSOME_SIZE; i++){
 			if(Math.random() < chromosomeRate){

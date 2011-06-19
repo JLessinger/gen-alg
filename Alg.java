@@ -26,8 +26,10 @@ public class Alg {
 	
 	/**Alg as an individual*/
 	private long algFitness; 
-	private final int ALG_CHROMOSOME_SIZE = 6;
+	
 	private final int ALG_TRUE_RATE = 4;
+	
+	public static final int ALG_CHROMOSOME_SIZE = 6;
 	/********/
 	
 	
@@ -43,17 +45,17 @@ public class Alg {
 	* 3 = numIndMutateRate
 	* 4 = numIndGeneMutateRate
 	* 5 = numIndGeneBitMutateRate
-	*/
+	*/ 
 	//all have natural limits, but will be allowed to vary freely within them 
 	//just like NumInd genes have a natural limit according to their size
 	
 	private int selection;
 	private final int SELECTION_GENE_SIZE = (int) Math.ceil(Math.log(NUMIND_POP_SIZE+1)/Math.log(2));
-	//roulette selection on a subpopulation of what size?
+	//numIndRoulette selection on a subpopulation of what size?
 		       //smaller populations are like randomized tournament selection
 		       // 2²selection²NUMIND_POP_SIZE
-		       //if select = 2, roulette selection on 2 randomly selected
-		       //if selected = NUMIND_POP_SIZE, normal roulette
+		       //if select = 2, numIndRoulette selection on 2 randomly selected
+		       //if selected = NUMIND_POP_SIZE, normal numIndRoulette
 
 	private int elitism;
 	private final int ELITISM_GENE_SIZE = (int) Math.ceil(Math.log(NUMIND_POP_SIZE+1)/Math.log(2));
@@ -67,16 +69,16 @@ public class Alg {
 			//genes from other parent
 			//LIMITS: 0 <= crossover <= NUMIND_CHROMOSOME_SIZE
 	
-
-				     
-				
+			
 	//mutation rate stuff
 	//each of these genes is 10 bits. value will be divided by max (1023)
 	//to achieve a double between 0 and 1
 	private double numIndMutateRate; //LIMITS: 0-1
 	private final int NUMIND_MUTATE_RATE_GENE_SIZE = 10;
+	
 	private double numIndGeneMutateRate; //LIMITS: 0-1
 	private final int NUMIND_GENE_MUTATE_RATE_GENE_SIZE = 10;
+	
 	private double numIndGeneBitMutateRate; //LIMITS: 0-1
 	private final int NUMIND_GENE_BIT_MUTATE_RATE_GENE_SIZE = 10;
 
@@ -108,6 +110,29 @@ public class Alg {
 		}
 		numIndPop = a.copyNumIndPop();
 	}
+	
+	public String toString() {
+
+		String s = "\nAlg:\n";
+		s += "Selection:" + selection + "\nElitism:" + elitism + "\nCrossover:" + crossover;
+		s += "\nnumIndMutateRate:" + numIndMutateRate + "\nnumIndGeneMutateRate:" + numIndGeneMutateRate;
+		s += "\nnumIndGeneBitMutateRate:" + numIndGeneBitMutateRate //+ "\nnumber of bit mutations expected"
+		//+ NUMIND_POP_SIZE * NumInd.NUMIND_CHROMOSOME_SIZE * NumInd.NUMIND_GENE_SIZE 
+		//* numIndMutateRate * numIndGeneMutateRate * numIndGeneBitMutateRate  
+		+ "\n\n";
+		for(int i = 0; i < NUMIND_POP_SIZE; i++){
+			NumInd n = numIndPop[i];
+			s += "NumInd " + (i) + ": fitness = " + n.getNumIndFitness() + "\n";
+		}
+		setNumIndTotAvgFitness();
+		s += "\nTotal NumInd Fitness = " + numIndTotalFitness + "\n";
+		s += "Average NumInd Fitness = " + numIndAvgFitness;
+		return s;
+	}
+	
+	
+	
+	/**ACCESSORS AND MUTATORS**********************************************/
 
 	public void setVariables(){
 		/**Set Genes in Alg's chromosome*/
@@ -140,32 +165,14 @@ public class Alg {
 		numIndGeneBitMutateRate = (double) algChromosome[5].getValue() / 1023;
 
 	}
-	
-	public String toString() {
-
-		String s = "Alg:\n";
-		s += "\nselection:" + selection + "\nelitism:" + elitism + "\ncrossover:" + crossover
-		+ "\nnumIndMutateRate:" + numIndMutateRate + "\nnumIndGeneMutateRate:" + numIndGeneMutateRate
-		+ "\nnumIndGeneBitMutateRate:" + numIndGeneBitMutateRate //+ "\nnumber of bit mutations expected"
-		//+ NUMIND_POP_SIZE * NumInd.NUMIND_CHROMOSOME_SIZE * NumInd.NUMIND_GENE_SIZE 
-		//* numIndMutateRate * numIndGeneMutateRate * numIndGeneBitMutateRate  
-		+ "\n\n";
-		for(int i = 0; i < NUMIND_POP_SIZE; i++){
-			NumInd n = numIndPop[i];
-			s += "NumInd " + (i) + ": fitness = " + n.getNumIndFitness() + "\n";
-		}
-		setNumIndTotAvgFitness();
-		s += "\nTotal NumInd Fitness = " + numIndTotalFitness + "\n";
-		s += "Average NumInd Fitness = " + numIndAvgFitness;
-		return s;
-	}
 
 	public NumInd getNumInd(int index) {
 
 		return numIndPop[index];
 	}
 
-	public int[] getNumIndsSorted(){
+	public int[] getNumIndsSorted() {
+		
 		return numIndsSorted;
 	}
 	
@@ -178,15 +185,24 @@ public class Alg {
 		return copy;
 	}
 
-	public long getAlgFitness(){
-		setAlgFitness();
-		return algFitness;
+	public long getAlgFitness() {
+		//setAlgFitness();//that calls numIndMatingSeason?
+		return algFitness;//
 	}
+	
+	public void setAlgFitness() {
+		algFitness = 0;
+		for(int i = 0; i < GENERATIONS_PER_TRIAL; i++) {
+			numIndMatingSeason();
+			//System.out.print("chang" + changeInAvgNumIndFitness + " ");
+			algFitness += changeInAvgNumIndFitness;//set algFitness instance var
+		}
+	}				
 	
 	public void setNumIndTotAvgFitness() {
 
 		numIndTotalFitness = 0;
-		for(int i = 0; i < numIndPop.length; i++){
+		for(int i = 0; i < numIndPop.length; i++) {
 			numIndTotalFitness += numIndPop[i].getNumIndFitness();
 		}
 		
@@ -197,12 +213,12 @@ public class Alg {
 	public void setChangeInTotAvgNumIndFitness(NumInd[] oldPop) {
 		
 		long oldFit = 0;
-		for(int i = 0; i < oldPop.length; i++){
+		for(int i = 0; i < oldPop.length; i++) {
 			oldFit += oldPop[i].getNumIndFitness();
 		}
 		
 		long newFit = 0;
-		for(int i = 0; i < numIndPop.length; i++){
+		for(int i = 0; i < numIndPop.length; i++) {
 			newFit += this.numIndPop[i].getNumIndFitness();
 		}
 		
@@ -221,11 +237,43 @@ public class Alg {
 		}
 		return end;
 	}
+	
+	public int getSelection() {
 		
+		return selection;
+	}
+	
+	public int getElitism() {
 		
+		return elitism;
+	}
+	
+	public int getCrossover() {
+		
+		return crossover;
+	}
+	
+	public double getNumIndMutateRate() {
+		
+		return numIndMutateRate;
+	}
+	
+	public double getNumIndGeneMutateRate() {
+		
+		return numIndGeneMutateRate;
+	}
+		
+	public double getNumIndGeneBitMutateRate() {
+		
+		return numIndGeneBitMutateRate;
+	}
+	
+	/**********************************************************************/
 
-	//sorts the top n NumInds in population according to fitness value
-	public void sort(int n) {
+	/**SORTING THE POPULATION**********************************************/
+	
+	//numIndSorts the top n NumInds in population according to fitness value
+	public void numIndSort(int n) {
 	
 		for(int i = 0; i < n; i++) {
 			int best = i;
@@ -236,7 +284,7 @@ public class Alg {
 			}
 			swap(i, best);
 		}
-			System.out.println(numIndsSorted);
+			//System.out.println(numIndsSorted);
 	}
 
 	public void swap(int a, int b) {
@@ -245,8 +293,12 @@ public class Alg {
 		numIndsSorted[a] = numIndsSorted[b];
 		numIndsSorted[b] = tem;
 	}
+	
+	/**********************************************************************/
 
-	public void matingSeason() {
+	/**MATING**************************************************************/
+	
+	public void numIndMatingSeason() {
 
 		setNumIndTotAvgFitness();
 		double oldAvg = numIndAvgFitness;
@@ -255,7 +307,7 @@ public class Alg {
 		NumInd[] temPop = new NumInd[NUMIND_POP_SIZE];
 
 		//put the best elitism numinds at the front of numIndsSorted
-		sort(elitism);
+		numIndSort(elitism);
 
 		//fill tempop with the numIndsSorted numinds
 		for(int k = 0; k < elitism; k++){
@@ -264,17 +316,18 @@ public class Alg {
 
 		//fill remaining population with offspring
 		for(int m = elitism; m < NUMIND_POP_SIZE; m++) {
-			int mother = selectParent(-1);
-			int father = selectParent(mother); //select a father who is not the mother 
+			int mother = numIndSelectParent(-1);
+			int father = numIndSelectParent(mother); //select a father who is not the mother 
 							
-			temPop[m] = mate(mother, father);
+			temPop[m] = numIndMate(mother, father);
 		}
 		numIndPop = temPop;
 
-		algMutate();
-		
-		/** list of new individuals (with fitnesses), mean / median fitness, std dev fitness, 
-		total change in fitness, mean change in fitness*/
+		algMutateNumInds();
+	
+		setNumIndTotAvgFitness();
+		setChangeInTotAvgNumIndFitness(oldPop);
+		/*printing out data
 		setNumIndTotAvgFitness();
 		setChangeInTotAvgNumIndFitness(oldPop);
 		System.out.println("matingseason");
@@ -284,47 +337,34 @@ public class Alg {
 		System.out.println("oldpop total fitness: " + oldTot);
 		System.out.println("newpop total fitness: " + numIndTotalFitness);
 		System.out.println("change in total fitness: " + changeInTotNumIndFitness);
-		
+		*/
 		
 	}
-	
-	public void algMutate(){
-		for(int i = 0; i < NUMIND_POP_SIZE; i++){
-			if(Math.random() < numIndMutateRate){
-				numIndPop[i].numIndMutate(numIndGeneMutateRate, numIndGeneBitMutateRate);
-			}
-		}
-	}
-	
-	public NumInd mate(int motInd, int fatInd) {
+
+	public NumInd numIndMate(int motInd, int fatInd) {
 		
 		NumInd mother = numIndPop[motInd];
 		NumInd father = numIndPop[fatInd];
 		NumInd child = new NumInd();
 		int i = 0;
 		for(; i < crossover; i++){
-			child.setGene(i, mother);
+			child.setNumIndGene(i, mother);
 		}
 		for(; i < NumInd.NUMIND_CHROMOSOME_SIZE; i++){
-			child.setGene(i, father);
+			child.setNumIndGene(i, father);
 		}
 		return child;
 	}
 
-	/**
-	must not choose same parent twice for a particular mating.
-	this is not accounted for now.
-	**/
-	//selects a parent via hybrid roulette/tournament selection such that
-	//no mating selects a parent twice
-	//post-condition: does not return a NumInd in alreadyChosen
-	public int selectParent(int mother) {
+	//selects a parent via hybrid numIndRoulette/tournament selection such that
+	//no mating selects a parent twice	
+	public int numIndSelectParent(int mother) {
 
 		//holds indices referring to numIndPop indices of NumInds
 		//to be considered for mating
 		int[] subPop = new int[selection];
 
-		//holds indices of all potential parents not already chosen
+		//holds indices of all potential parents not the parameter
 		ArrayList<Integer> selectFrom = new ArrayList<Integer>();
 		for(int k = 0; k < NUMIND_POP_SIZE; k++) {
 			if(k!=mother) {
@@ -333,7 +373,7 @@ public class Alg {
 		}
 		//System.out.println("selectfrom" + selectFrom);
 		//if selection = NUMIND_POP_SIZE, subpop = pop and it is 
-		//simple roulette selection. Otherwise, weighted random tournament
+		//simple numIndRoulette selection. Otherwise, weighted random tournament
 
 		for(int i = 0; i < selection; i++) {
 			if(selectFrom.size()>0){
@@ -342,11 +382,11 @@ public class Alg {
 		}
 		//pre-condition: subPop does not contain any parents already selected in this
 		//mating, and does not contain the same NumInd twice
-		return roulette(subPop);
+		return numIndRoulette(subPop);
 	}
 	
-	//roulette selection with array of numIndPop indices
-	public int roulette(int[] pop) {
+	//numIndRoulette selection with array of numIndPop indices
+	public int numIndRoulette(int[] pop) {
 		
 		long ball = (long) (Math.random() * setSubPopTotalFitness(pop));
 		long sum = 0;
@@ -359,17 +399,39 @@ public class Alg {
 		return -1;
 	}
 	
+	/**********************************************************************/
 	
+	/**MUTATING************************************************************/
 	
-	//stuff for Alg as an individual	
-	
-	public void setAlgFitness(){
-		algFitness = 0;
-		for(int i = 0; i < GENERATIONS_PER_TRIAL; i++){
-			matingSeason();
-			algFitness += changeInAvgNumIndFitness;
+	//Calls numIndMutate(). Doesn't mutate the Alg
+	public void algMutateNumInds() {
+		
+		for(int i = 0; i < NUMIND_POP_SIZE; i++){
+			if(Math.random() < numIndMutateRate){
+				numIndPop[i].numIndMutate(numIndGeneMutateRate, numIndGeneBitMutateRate);
+			}
 		}
 	}
+	
+	/**********************************************************************/
+	
+	/**ALG AS AN INDIVIDUAL************************************************/
+	
+	public void setAlgGene(int index, Alg parent) {
+		
+		algChromosome[index] = new Gene(parent.algChromosome[index]);
+	}
+	
+	public void algMutateSelf(double algGeneMutateRate, double algGeneBitMutateRate) {
+		for(int i = 0; i < ALG_CHROMOSOME_SIZE; i++){
+			if(Math.random() < algGeneMutateRate){
+				algChromosome[i].geneMutate(algGeneBitMutateRate);
+			}					
+		}
+	}
+	
+	/**********************************************************************/
+	
                                      
 
 
@@ -390,13 +452,13 @@ public class Alg {
 		momAndDads[0] = 0;
 		momAndDads[1] = 1;
 		momAndDads[2] = 2;
-		NumInd kid = a.mate(momAndDads);
+		NumInd kid = a.numIndMate(momAndDads);
 		System.out.println(a.getNumInd(0));
 		System.out.println(a.getNumInd(1));
 		System.out.println(a.getNumInd(2));
 		System.out.println(kid);
 		
-		a.sort(3);
+		a.numIndSort(3);
 		for(int i = 0; i < a.numIndsSorted.length; i++){
 			System.out.println(a.numIndPop[a.numIndsSorted[i]].getNumIndFitness());
 		}
@@ -420,25 +482,28 @@ public class Alg {
 		System.out.println("one parent: " + a.numIndPop[4]);
 		
 		a.selection = 14;//subpop = 14
-		int x = a.selectParent(4);
+		int x = a.numIndSelectParent(4);
 		a.crossover = 8;
 		System.out.println("second one: " + x);
 		System.out.println("parent2: " + a.numIndPop[x]);
 		
-		System.out.println(a.mate(4,x));
+		System.out.println(a.numIndMate(4,x));
 		*/
 		
+		/*
 		Alg a = new Alg();
-		/*System.out.println("old population\n\n");
+		System.out.println("old population\n\n");
 		System.out.println(a);
 		
 		a.setNumIndTotAvgFitness();
 		//System.out.println("main");
 		//System.out.println("Average Fitness: " + a.numIndAvgFitness);
-		a.matingSeason();
+		a.numIndMatingSeason();
 		System.out.println("new population\n\n");
-		System.out.println(a);*/
+		System.out.println(a);
+		*/
 		
+		Alg a = new Alg();
 		System.out.println(a);
 		a.setAlgFitness();//does 100 mating seasons, changing alg's population
 		System.out.println(a);

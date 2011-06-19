@@ -135,10 +135,15 @@ public class Alg {
 			selection = 2;
 		}
 		selection = (int) ((double) algChromosome[0].getValue() / algChromosome[0].getMaxValue() * (NUMIND_POP_SIZE-2)) + 2;
+		
 		elitism = (int) ((double) algChromosome[1].getValue() / algChromosome[1].getMaxValue() * NUMIND_POP_SIZE);
+		
 		crossover = (int) ((double) algChromosome[2].getValue() / algChromosome[2].getMaxValue() * NumInd.NUMIND_CHROMOSOME_SIZE);
+		
 		numIndMutateRate = (double) algChromosome[3].getValue() / 1023;
+		
 		numIndGeneMutateRate = (double) algChromosome[4].getValue() / 1023;
+		
 		numIndGeneBitMutateRate = (double) algChromosome[5].getValue() / 1023;
 	}
 

@@ -11,7 +11,7 @@ public class NumInd{
 	public static final long GENE_MAX_VALUE = (long)(Math.pow(2, NUMIND_GENE_SIZE) - 1);
 	
 	public static final long NUMIND_MAX_FITNESS = NUMIND_CHROMOSOME_SIZE * GENE_MAX_VALUE;
-
+ 
 	
 	private long numIndFitness;
 	private Gene[] numIndChromosome;
@@ -36,7 +36,14 @@ public class NumInd{
 		}
 	}
 	
-	public Gene getGene(int index) {
+	public NumInd(NumInd other){
+		numIndChromosome = new Gene[NUMIND_CHROMOSOME_SIZE];
+		for(int i = 0; i < NUMIND_CHROMOSOME_SIZE; i++){
+			numIndChromosome[i] = new Gene(other.getNumIndGene(i));
+		}
+	}
+	
+	public Gene getNumIndGene(int index) {
 		
 		return numIndChromosome[index];
 	}

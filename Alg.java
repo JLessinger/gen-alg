@@ -10,12 +10,14 @@ public class Alg {
 						//cannot vary between algs within
 						//a masteralg because the algs cannot be adequately
 						//compared without identical populations
+	private NumInd[] numIndPop;
 	private long numIndTotalFitness;
-	private int[] sorted; //indices of NumInds in pop in order of fitness
-				//sorted[0] = best
+	private double numIndAvgFitness;
+	private int[] numIndsSorted; //indices of NumInds in pop in order of fitness
+				//numIndsSorted[0] = best
 				
-	private double numIndAvgFitness;	//according to the class
-	private NumInd[] numIndPop;	//to avoid confusion
+	//according to the class
+		//to avoid confusion
 
 	private double changeInAvgNumIndFitness;
 	private long changeInTotNumIndFitness;
@@ -26,7 +28,6 @@ public class Alg {
 	private long algFitness; 
 	private final int ALG_CHROMOSOME_SIZE = 6;
 	private final int ALG_TRUE_RATE = 4;
-	//private final int ALG_TRUE_RATE = 2;
 	/********/
 	
 	
@@ -85,11 +86,11 @@ public class Alg {
 	public Alg() {
 		
 		setVariables();
-		sorted = new int[NUMIND_POP_SIZE];
+		numIndsSorted = new int[NUMIND_POP_SIZE];
 		numIndPop = new NumInd[NUMIND_POP_SIZE];
 		for(int i = 0; i < NUMIND_POP_SIZE; i++){
 			numIndPop[i] = new NumInd();
-			sorted[i] = i;
+			numIndsSorted[i] = i;
 		}
 	}
 
@@ -101,9 +102,9 @@ public class Alg {
 	public Alg(Alg a) {
 
 		setVariables();
-		sorted = new int[NUMIND_POP_SIZE];
+		numIndsSorted = new int[NUMIND_POP_SIZE];
 		for(int i = 0; i < NUMIND_POP_SIZE; i++){
-			sorted[i] = i;
+			numIndsSorted[i] = i;
 		}
 		numIndPop = a.copyNumIndPop();
 	}
@@ -149,7 +150,7 @@ public class Alg {
 		//+ NUMIND_POP_SIZE * NumInd.NUMIND_CHROMOSOME_SIZE * NumInd.NUMIND_GENE_SIZE 
 		//* numIndMutateRate * numIndGeneMutateRate * numIndGeneBitMutateRate  
 		+ "\n\n";
-		for(int i = 0; i < numIndPop.length; i++){
+		for(int i = 0; i < NUMIND_POP_SIZE; i++){
 			NumInd n = numIndPop[i];
 			s += "NumInd " + (i) + ": fitness = " + n.getNumIndFitness() + "\n";
 		}
@@ -164,15 +165,24 @@ public class Alg {
 		return numIndPop[index];
 	}
 
+	public int[] getNumIndsSorted(){
+		return numIndsSorted;
+	}
+	
 	public NumInd[] copyNumIndPop() {
 
 		NumInd[] copy = new NumInd[NUMIND_POP_SIZE];
 		for(int i = 0; i < NUMIND_POP_SIZE; i++){
-			copy[i] = numIndPop[i];
+			copy[i] = new NumInd(numIndPop[i]);
 		}
 		return copy;
 	}
 
+	public long getAlgFitness(){
+		setAlgFitness();
+		return algFitness;
+	}
+	
 	public void setNumIndTotAvgFitness() {
 
 		numIndTotalFitness = 0;
@@ -216,23 +226,24 @@ public class Alg {
 
 	//sorts the top n NumInds in population according to fitness value
 	public void sort(int n) {
-
+	
 		for(int i = 0; i < n; i++) {
 			int best = i;
-			for(int j = i; j < sorted.length; j++) {
-				if(numIndPop[sorted[j]].getNumIndFitness() > numIndPop[sorted[best]].getNumIndFitness()) {
+			for(int j = i; j < numIndsSorted.length; j++) {
+				if(numIndPop[numIndsSorted[j]].getNumIndFitness() > numIndPop[numIndsSorted[best]].getNumIndFitness()) {
 					best = j;
 				}
 			}
 			swap(i, best);
 		}
+			System.out.println(numIndsSorted);
 	}
 
 	public void swap(int a, int b) {
 
-		int tem = sorted[a];
-		sorted[a] = sorted[b];
-		sorted[b] = tem;
+		int tem = numIndsSorted[a];
+		numIndsSorted[a] = numIndsSorted[b];
+		numIndsSorted[b] = tem;
 	}
 
 	public void matingSeason() {
@@ -243,12 +254,12 @@ public class Alg {
 		NumInd[] oldPop = numIndPop;
 		NumInd[] temPop = new NumInd[NUMIND_POP_SIZE];
 
-		//put the best elitism numinds at the front of sorted
+		//put the best elitism numinds at the front of numIndsSorted
 		sort(elitism);
 
-		//fill tempop with the sorted numinds
+		//fill tempop with the numIndsSorted numinds
 		for(int k = 0; k < elitism; k++){
-			temPop[k] = numIndPop[sorted[k]];
+			temPop[k] = numIndPop[numIndsSorted[k]];
 		}
 
 		//fill remaining population with offspring
@@ -386,8 +397,8 @@ public class Alg {
 		System.out.println(kid);
 		
 		a.sort(3);
-		for(int i = 0; i < a.sorted.length; i++){
-			System.out.println(a.numIndPop[a.sorted[i]].getNumIndFitness());
+		for(int i = 0; i < a.numIndsSorted.length; i++){
+			System.out.println(a.numIndPop[a.numIndsSorted[i]].getNumIndFitness());
 		}
 		*/
 
@@ -399,7 +410,7 @@ public class Alg {
 
 		System.out.println(a.numIndAvgFitness);
 
-		System.out.println(a.sorted);
+		System.out.println(a.numIndsSorted);
 		*/
 		
 		/*

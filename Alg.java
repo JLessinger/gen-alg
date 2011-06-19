@@ -111,6 +111,22 @@ public class Alg {
 		numIndPop = a.copyNumIndPop();
 	}
 	
+	/**for the control alg with a big population*/
+	public Alg(int size, int select, int elite, int cross, double rate1, double rate2, double rate3) {
+		numIndPop = new NumInd[size];
+		selection = select;
+		elitism = elite;
+		crossover = cross;
+		numIndMutateRate = rate1;
+		numIndGeneMutateRate = rate2;
+		numIndGeneBitMutateRate = rate3;
+		numIndSorted = new int[size];
+		for(int i = 0; i < size; i++){
+			numIndPop[i] = new NumInd();
+			numIndsSorted[i] = i;
+		}
+	}
+	
 	public String toString() {
 
 		String s = "\nAlg:\n";

@@ -60,7 +60,7 @@ class MasterAlg{
 	private int[] crossoverDataIndices;
 	private double[] algMutateRateDataIndices;
 	private double[] algGeneMutateRateDataIndices;
-	private double[] algGeneBitutateRateDataIndices;
+	private double[] algGeneBitMutateRateDataIndices;
 	/****/
 	private int generations;
 	
@@ -405,8 +405,77 @@ class MasterAlg{
 	}
 	
 	public void sortSelection(){
-		for(int i = 0; i < 
+		for(int i = 0; i < selectionDataIndices.length; i++){
+			int best = i;
+			for(int j = i; j < selectionDataIndices.length; j++){
+				if(selectionData[selectionDataIndices[j]] > selectionData[selectionDataIndices[best]]){
+					best = j;
+				}
+			}
+			swap(i, best, selectionDataIndices);
+		}
 	}
+	
+	public void sortElitism(){
+		for(int i = 0; i < elitismDataIndices.length; i++){
+			int best = i;
+			for(int j = i; j < elitismDataIndices.length; j++){
+				if(elitismData[elitismDataIndices[j]] > elitismData[selectionDataIndices[best]]){
+					best = j;
+				}
+			}
+			swap(i, best, elitismDataIndices);
+		}
+	}
+	
+	public void sortCrossover(){
+		for(int i = 0; i < crossoverDataIndices.length; i++){
+			int best = i;
+			for(int j = i; j < crossoverDataIndices.length; j++){
+				if(crossoverData[crossoverDataIndices[j]] > crossoverData[crossoverDataIndices[best]]){
+					best = j;
+				}
+			}
+			swap(i, best, crossoverDataIndices);
+		}
+	}
+	
+	public void sortAlgMutateRate(){
+		for(int i = 0; i < algMutateRateDataIndices.length; i++){
+			int best = i;
+			for(int j = i; j < algMutateRateDataIndices.length; j++){
+				if(algMutateRateData[algMutateRateDataIndices[j]] > algMutateRateData[algMutateRateDataIndices[best]]){
+					best = j;
+				}
+			}
+			swap(i, best, algMutateRateDataIndices);
+		}
+	}
+	
+	public void sortAlgGeneMutateRate(){
+		for(int i = 0; i < algGeneMutateRateDataIndices.length; i++){
+			int best = i;
+			for(int j = i; j < algGeneMutateRateDataIndices.length; j++){
+				if(algGeneMutateRateData[algGeneMutateRateDataIndices[j]] > algGeneMutateRateData[algGeneMutateRateDataIndices[best]]){
+					best = j;
+				}
+			}
+			swap(i, best, algGeneMutateRateDataIndices);
+		}
+	}
+	
+	public void sortAlgGeneBitMutateRate(){
+		for(int i = 0; i < algGeneBitMutateRateDataIndices.length; i++){
+			int best = i;
+			for(int j = i; j < algGeneBitMutateRateDataIndices.length; j++){
+				if(algGeneBitMutateRateData[algGeneBitMutateRateDataIndices[j]] > algGeneBitMutateRateData[algGeneBitMutateRateDataIndices[best]]){
+					best = j;
+				}
+			}
+			swap(i, best, algGeneBitMutateRateDataIndices);
+		}
+	}
+	
 	/********************************************/
 	public static void main(String[] args){
 		System.out.println(isParsableToDouble(".3"));

@@ -85,6 +85,16 @@ public class Alg {
 	/*end of variables to be optimized. think of more? these cover a lot
 	of steps in the process. add any missing, very important ones*/
 
+	
+	/**DATA COLLECTION*****************************************************/
+	
+	private long[][] numIndFitnessData;
+	private long[] numIndTotFitnessData;
+	private double[] numIndAvgFitnessData;
+	
+	/**********************************************************************/
+	
+	
 	public Alg() {
 		
 		setVariables();
@@ -94,6 +104,15 @@ public class Alg {
 			numIndPop[i] = new NumInd();
 			numIndsSorted[i] = i;
 		}
+		
+		setNumIndTotAvgFitness();
+		
+		numIndFitnessData = new long[GENERATIONS_PER_TRIAL + 1][NUMIND_POP_SIZE];
+		setNumIndFitnessData(0);
+		
+		numIndTotFitnessData = new long[GENERATIONS_PER_TRIAL + 1];
+		numIndAvgFitnessData = new double[GENERATIONS_PER_TRIAL + 1];
+		setNumIndTotAvgFitnessData(0);
 	}
 
 	/**
@@ -109,6 +128,15 @@ public class Alg {
 			numIndsSorted[i] = i;
 		}
 		numIndPop = a.copyNumIndPop();
+		
+		setNumIndTotAvgFitness();
+		
+		numIndFitnessData = new long[GENERATIONS_PER_TRIAL + 1][NUMIND_POP_SIZE];
+		setNumIndFitnessData(0);
+		
+		numIndTotFitnessData = new long[GENERATIONS_PER_TRIAL + 1];
+		numIndAvgFitnessData = new double[GENERATIONS_PER_TRIAL + 1];
+		setNumIndTotAvgFitnessData(0);
 	}
 	
 	/**for the control alg with a big population*/
@@ -126,6 +154,15 @@ public class Alg {
 			numIndPop[i] = new NumInd();
 			numIndsSorted[i] = i;
 		}
+		
+		setNumIndTotAvgFitness();
+		
+		numIndFitnessData = new long[GENERATIONS_PER_TRIAL + 1][NUMIND_POP_SIZE];
+		setNumIndFitnessData(0);
+		
+		numIndTotFitnessData = new long[GENERATIONS_PER_TRIAL + 1];
+		numIndAvgFitnessData = new double[GENERATIONS_PER_TRIAL + 1];
+		setNumIndTotAvgFitnessData(0);
 	}
 	
 	public String toString() {
@@ -200,22 +237,6 @@ public class Alg {
 			copy[i] = new NumInd(numIndPop[i]);
 		}
 		return copy;
-	}
-
-	public long getAlgFitness() {
-		//setAlgFitness();//that calls numIndMatingSeason?
-		return algFitness;//
-	}
-	
-	public void setAlgFitness() {
-		algFitness = 0;
-		for(int i = 0; i < GENERATIONS_PER_TRIAL; i++) {
-			numIndMatingSeason();
-			//System.out.print("chang" + changeInAvgNumIndFitness + " ");
-			algFitness += changeInAvgNumIndFitness;//set algFitness instance var
-		}
-		if(algFitness < 0)
-			algFitness = 0;
 	}				
 	
 	public void setNumIndTotAvgFitness() {
@@ -287,6 +308,20 @@ public class Alg {
 		return numIndGeneBitMutateRate;
 	}
 	
+	public void setNumIndFitnessData(int genNumber) {
+		
+		for (int i = 0; i < NUMIND_POP_SIZE; i++) {
+			numIndFitnessData[genNumber][i] = numIndPop[i].getNumIndFitness();
+		}
+	}
+	
+	public void setNumIndTotAvgFitnessData(int genNumber) {
+		
+		numIndTotFitnessData[genNumber] = numIndTotalFitness;
+		numIndAvgFitnessData[genNumber] = numIndAvgFitness;
+	}
+		
+	
 	/**********************************************************************/
 
 	/**SORTING THE POPULATION**********************************************/
@@ -317,7 +352,7 @@ public class Alg {
 
 	/**MATING**************************************************************/
 	
-	public void numIndMatingSeason() {
+	public void numIndMatingSeason(int genNumber) {
 
 		setNumIndTotAvgFitness();
 		double oldAvg = numIndAvgFitness;
@@ -346,6 +381,11 @@ public class Alg {
 	
 		setNumIndTotAvgFitness();
 		setChangeInTotAvgNumIndFitness(oldPop);
+		
+		setNumIndFitnessData(genNumber);
+		setNumIndTotAvgFitnessData(genNumber);
+		
+		
 		/*printing out data
 		setNumIndTotAvgFitness();
 		setChangeInTotAvgNumIndFitness(oldPop);
@@ -447,6 +487,22 @@ public class Alg {
 				algChromosome[i].geneMutate(algGeneBitMutateRate);
 			}					
 		}
+	}
+
+	public long getAlgFitness() {
+		//setAlgFitness();//that calls numIndMatingSeason?
+		return algFitness;//
+	}
+	
+	public void setAlgFitness() {
+		algFitness = 0;
+		for(int i = 0; i < GENERATIONS_PER_TRIAL; i++) {
+			numIndMatingSeason(i + 1);
+			//System.out.print("chang" + changeInAvgNumIndFitness + " ");
+			algFitness += changeInAvgNumIndFitness;//set algFitness instance var
+		}
+		if(algFitness < 0)
+			algFitness = 0;
 	}
 	
 	/**********************************************************************/

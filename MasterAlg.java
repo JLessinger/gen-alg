@@ -45,6 +45,18 @@ class MasterAlg{
 	private double algGeneMutateRate;
 	private double algGeneBitMutateRate;
 	
+	private long[][] algFitnessData;
+	private double[] algAvgFitnessData;
+	private int[] selectionData;
+	private int[] elitismData;
+	private int[] crossoverData;
+	private double[] algMutateRateData;
+	private double[] algGeneMutateRateData;
+	private double[] algGeneBitMutateRateData; 
+	
+	private int generations;
+	
+ 
 	
 	public MasterAlg() {
 		
@@ -55,9 +67,24 @@ class MasterAlg{
 			algPop[i] = new Alg(template);
 			algsSorted[i] = i;
 		}
+		setData(0);
 	}
 	
-	public String toString(){
+	public MasterAlg(int genNumber) {           //parameter for user imput
+		
+		algsSorted = new int[ALG_POP_SIZE];
+		algPop = new Alg[ALG_POP_SIZE];
+		template = new Alg();
+		for(int i = 0; i < ALG_POP_SIZE; i++){
+			algPop[i] = new Alg(template);
+			algsSorted[i] = i;
+		}
+		generations = genNumber;
+		setData(0);
+	}
+	
+	public String toString() {
+		
 		String s = "";
 		s += "\nselection:" + selection + "\nelitism:" + elitism + "\ncrossover:" + crossover
 		+ "\nalgMutateRate:" + algMutateRate + "\nalgGeneMutateRate:" + algGeneMutateRate
@@ -78,7 +105,7 @@ class MasterAlg{
 	 
 		s += "\nTotal Alg Fitness = " + algTotalFitness + "\n";
 		s += "Average Alg Fitness = " + algAvgFitness;
-		return s;	
+		return s;
 	}
 	
 	/**ACCESSORS AND MUTATORS**********************************************/
@@ -107,7 +134,7 @@ class MasterAlg{
 
 	public int[] getAlgsSorted() {
 		
-		return algsSorted;
+		return algsSorted;		
 	}
 	
 	public void setAlgTotAvgFitness() {
@@ -151,6 +178,24 @@ class MasterAlg{
 		return algGeneBitMutateRate;
 	}
 	
+	public void setAlgFitnessData(int genNumber) {
+	
+		for (int i = 0; i < ALG_POP_SIZE; i++) {
+			algFitnessData[genNumber][i] = algPop[i].getAlgFitness();
+		}
+	}
+	
+	public void setData(int genNumber) {
+		
+		algAvgFitnessData[genNumber] = algAvgFitness;
+		selectionData[genNumber] = selection;
+		elitismData[genNumber] = elitism;
+		crossoverData[genNumber] = crossover;
+		algMutateRateData[genNumber] = algMutateRate;
+		algGeneMutateRateData[genNumber] = algGeneMutateRate;
+		algGeneBitMutateRateData[genNumber] = algGeneBitMutateRate;
+	}
+	
 	/**********************************************************************/
 
 	/**SORTING THE POPULATION**********************************************/
@@ -182,9 +227,23 @@ class MasterAlg{
 	
 	/**MATING**************************************************************/
 	
-	public void algMatingSeason() {
+	public void runAlgMatingSeason(Alg control) {
 		
-		setAlgTotAvgFitness();//calls setAlgFitness 
+		for(int i = 0; i < generations; i++) {
+			algMatingSeason(i + 1);
+			control.numIndMatingSeason(i + 1);
+		}
+		
+		setAlgTotAvgFitness();
+		
+		setAlgFitnessData(generations + 1);
+	}
+	
+	public void algMatingSeason(int genNumber) {
+		
+		setAlgTotAvgFitness();
+		
+		setAlgFitnessData(genNumber - 1);
 		
 		if(elitism > 0){
 			//put the best elitism Algs at the front of algsSorted
@@ -215,6 +274,8 @@ class MasterAlg{
 		algPop = temPop;
 
 		masterAlgMutateAlg();
+		
+		setData(genNumber);
 		
 		/**printing out data*/
 		//data
@@ -302,19 +363,20 @@ class MasterAlg{
 	
 	/**********************************************************************/
 	
-	public static void main(String[] args){
-		Scanner sc = new Scanner(System.in);
-		/**CONTROL ALG*/
-		System.out.println("Enter the Alg's variables: selection, elitism, crossover, individual mutation rate, gene mutation rate, bit mutation rate.");
+	/**PRINT DATA**********************************************************/
+	
+	
+	
+	/**********************************************************************/
+	
+	
+	public static void main(String[] args) {
 		
 		
-		//population = total number of NumInds in m
-		Alg control = new Alg(ALG_POP_SIZE * Alg.NUMIND_POP_SIZE, a, b, c, d, e, f);
-		/*************/
 		MasterAlg m = new MasterAlg();
 		System.out.println(m);
 		System.out.println("\n\n");
-		m.algMatingSeason();
+		//m.runAlgMatingSeason();
 		System.out.println(m);
-	}
+	} 
 }

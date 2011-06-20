@@ -12,7 +12,7 @@ import java.io.*;
 	alongside that of the masteralg for comparison)
 3. README 
 	most of it will come from comments in code
-4. SEND IT TO DW
+4. RENAME RETARDED STUFF
 	
 */
 /**
@@ -29,7 +29,7 @@ MasterAlg and Alg are the same, so this assumption is plausible.
 
 class MasterAlg{
 	
-	final int ALG_POP_SIZE = 30;
+	static final int ALG_POP_SIZE = 30;
  	
 	private Alg[] algPop;
 	private Alg template;//copy it many times into algPop
@@ -294,19 +294,110 @@ class MasterAlg{
 	
 	/**********************************************************************/
 	
+	/***USER DATA STUFF****************************************************/
+	public static boolean isParsableToInt(String i){
+		try{
+			Integer.parseInt(i);
+			return true;
+		}
+		catch(NumberFormatException nfe){
+			return false;
+		}
+	}
+	
+	public static boolean isParsableToDouble(String i){
+		try{
+			Double.parseDouble(i);
+			return true;
+		}
+		catch(NumberFormatException nfe){
+			return false;
+		}
+	}
+	/**********************************************************************/
 	public static void main(String[] args){
-		Scanner sc = new Scanner(System.in);
-		/**CONTROL ALG*/
-		System.out.println("Enter the Alg's variables: selection, elitism, crossover, individual mutation rate, gene mutation rate, bit mutation rate.");
+		System.out.println(isParsableToDouble(".3"));
+		//System.out.println(Integer.parseInt("f"));
+		System.out.println("\n\n\n\n\nWelcome to the Master Genetic Algorithm.");
+		System.out.println("Here, you can optimize a population of number-individuals using Master Alg or Control Alg.");
+		System.out.println("They have the same population size. Master Alg will run automatically, but");
+		System.out.println("Control Alg needs user-predetermined values for its variables.");
+		System.out.println("\n\t*Note: after you enter this information, you will have the option\n\tto display various data about the processes.\n");
 		
+		Scanner sc = new Scanner(System.in);
+		
+		/**CONTROL ALG INPUT*/
+		System.out.println("Enter the Alg's variables: selection, elitism, crossover,\nindividual mutation rate, gene mutation rate, bit mutation rate.");
+		
+		System.out.println("Selection: 2 to " + Alg.NUMIND_POP_SIZE);
+		String sels = sc.next();
+		while(!isParsableToInt(sels) ||(Integer.parseInt(sels) < 2 || Integer.parseInt(sels) > Alg.NUMIND_POP_SIZE)){
+			System.out.println("Integer between 2 and " + Alg.NUMIND_POP_SIZE + ", inclusive, please.");
+			sels = sc.next();
+		}
+		int sel = Integer.parseInt(sels);
+		
+		System.out.println("Elitism: 0 to " + Alg.NUMIND_POP_SIZE);
+		String els = sc.next();
+		while(!isParsableToInt(els) || (Integer.parseInt(els) < 0 || Integer.parseInt(els) > Alg.NUMIND_POP_SIZE)){
+			System.out.println("Integer between 0 and " + Alg.NUMIND_POP_SIZE + ", inclusive, please.");
+			els = sc.next();
+		}
+		int el = Integer.parseInt(els);
+		
+		System.out.println("Crossover: 0 to " + NumInd.NUMIND_CHROMOSOME_SIZE);
+		String crs = sc.next();
+		while(!isParsableToInt(crs) || (Integer.parseInt(crs) < 0 || Integer.parseInt(crs) > NumInd.NUMIND_CHROMOSOME_SIZE)){
+			System.out.println("Decimal between 0 and " + NumInd.NUMIND_CHROMOSOME_SIZE + ", inclusive, please.");
+			crs = sc.next();
+		}
+		int cr = Integer.parseInt(crs);
+		
+		System.out.println("Individual mutation rate: 0 to 1, inclusive, please.");
+		String r1s = sc.next();
+		while(!isParsableToDouble(r1s) || (Double.parseDouble(r1s) < 0 || Double.parseDouble(r1s) > 1)){
+			System.out.println("Decimal between 0 and 1, inclusive, please.");
+			r1s = sc.next();
+		}
+		double r1 = Double.parseDouble(r1s);
+		
+		System.out.println("Gene mutation rate: 0 to 1.");
+		String r2s = sc.next();
+		while(!isParsableToDouble(r2s) || (Double.parseDouble(r2s) < 0 || Double.parseDouble(r2s) > 1)){
+			System.out.println("Decimal between 0 and 1, inclusive, please.");
+			r2s = sc.next();
+		}
+		double r2 = Double.parseDouble(r2s);
+		
+		System.out.println("Bit mutation rate: 0 to 1.");
+		String r3s = sc.next();
+		while(!isParsableToDouble(r3s) || (Double.parseDouble(r3s) < 0 || Double.parseDouble(r3s) > 1)){
+			System.out.println("Decimal between 0 and 1, inclusive, please.");
+			r3s = sc.next();
+		}
+		double r3 = Double.parseDouble(r3s);
 		
 		//population = total number of NumInds in m
-		Alg control = new Alg(ALG_POP_SIZE * Alg.NUMIND_POP_SIZE, a, b, c, d, e, f);
-		/*************/
-		MasterAlg m = new MasterAlg();
-		System.out.println(m);
-		System.out.println("\n\n");
-		m.algMatingSeason();
-		System.out.println(m);
+		Alg control = new Alg(ALG_POP_SIZE * Alg.NUMIND_POP_SIZE, sel, el, cr, r1, r2, r3);
+		/**********************/
+		
+		System.out.println("Through how many generations should the genetic algorithms run?");
+		String gens = sc.next();
+		while(!isParsableToInt(gens) || Integer.parseInt(gens) < 0){
+			gens = sc.next();
+		}
+		
+		int gen = Integer.parseInt(gens);
+		MasterAlg m = new MasterAlg(gen);
+		
+		System.out.println("Which data do you want to see?");
+		System.out.println("");
+		m.runAlgMatingSeason();//runs a matingseason on control and master, each of which
+				       //sets all data
+		
+		//System.out.println(m);
+		//System.out.println("\n\n");
+		//m.algMatingSeason();
+		//System.out.println(m);
 	}
 }

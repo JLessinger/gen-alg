@@ -120,7 +120,7 @@ public class Alg {
 		numIndMutateRate = rate1;
 		numIndGeneMutateRate = rate2;
 		numIndGeneBitMutateRate = rate3;
-		numIndSorted = new int[size];
+		numIndsSorted = new int[size];
 		for(int i = 0; i < size; i++){
 			numIndPop[i] = new NumInd();
 			numIndsSorted[i] = i;

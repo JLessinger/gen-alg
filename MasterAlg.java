@@ -45,7 +45,11 @@ class MasterAlg{
 	private double algGeneMutateRate;
 	private double algGeneBitMutateRate;
 	
+	private double numIndAvgFitness;
+	
 	private double[] numIndAvgFitnessData;
+	private double[] controlNumIndFitnessData;
+	
 	private long[][] algFitnessData;
 	private double[] algAvgFitnessData;
 	/****/
@@ -55,6 +59,7 @@ class MasterAlg{
 	private double[] algMutateRateData;
 	private double[] algGeneMutateRateData;
 	private double[] algGeneBitMutateRateData; 
+
 	/**/
 	private int[] selectionDataIndices;
 	private int[] elitismDataIndices;
@@ -63,6 +68,17 @@ class MasterAlg{
 	private int[] algGeneMutateRateDataIndices;
 	private int[] algGeneBitMutateRateDataIndices;
 	/****/
+
+	
+	int[][] algSelectionData;
+	int[][] algElitismData;
+	int[][] algCrossoverData;
+	double[][] numIndMutateRateData;
+	double[][] numIndGeneMutateRateData;
+	double[][] numIndGeneBitMutateRateData;
+	
+	
+
 	private int generations;
 	
  
@@ -89,7 +105,7 @@ class MasterAlg{
 		}
 		generations = genNumber;
 		
-		//numIndAvgFitnessData = new double[
+		numIndAvgFitnessData = new double[generations + 1];
 		algFitnessData = new long[generations + 1][ALG_POP_SIZE];
 		algAvgFitnessData = new double[generations + 1];
 		selectionData = new int[generations + 1];
@@ -98,7 +114,10 @@ class MasterAlg{
 		algMutateRateData = new double[generations + 1];
 		algGeneMutateRateData = new double[generations + 1];
 		algGeneBitMutateRateData = new double[generations + 1];
+		numIndAvgFitnessData = new double[generations + 1];
+		controlNumIndFitnessData = new double[generations + 1];
 		setData(0);
+
 		selectionDataIndices = new int[generations+1];
 		elitismDataIndices = new int[generations+1];
 		crossoverDataIndices = new int[generations+1];
@@ -113,6 +132,17 @@ class MasterAlg{
 			algGeneMutateRateDataIndices[j] = j;
 			algGeneBitMutateRateDataIndices[j] = j;
 		}
+
+
+		setNumIndAvgFitnessData(0);
+		
+		algSelectionData = new int[generations + 1][ALG_POP_SIZE];
+		algElitismData = new int[generations + 1][ALG_POP_SIZE];
+		algCrossoverData = new int[generations + 1][ALG_POP_SIZE];
+		numIndMutateRateData = new double[generations + 1][ALG_POP_SIZE];
+		numIndGeneMutateRateData = new double[generations + 1][ALG_POP_SIZE];
+		numIndGeneBitMutateRateData = new double[generations + 1][ALG_POP_SIZE];
+		setAlgData(0);
 
 	}
 	
@@ -228,6 +258,33 @@ class MasterAlg{
 		algGeneBitMutateRateData[genNumber] = algGeneBitMutateRate;
 	}
 	
+	public void setAlgData(int genNumber) {
+		
+		for (int i = 0; i < ALG_POP_SIZE; i++) {
+			algSelectionData[genNumber][i] = algPop[i].getSelection();
+			algElitismData[genNumber][i] = algPop[i].getElitism();
+			algCrossoverData[genNumber][i] = algPop[i].getCrossover();
+			numIndMutateRateData[genNumber][i] = algPop[i].getNumIndMutateRate();
+			numIndGeneMutateRateData[genNumber][i] = algPop[i].getNumIndGeneMutateRate();
+			numIndGeneBitMutateRateData[genNumber][i] = algPop[i].getNumIndGeneBitMutateRate();
+		}
+	}
+	
+	public void setNumIndAvgFitness() {
+		
+		double x = 0;
+		for (int i = 0; i < ALG_POP_SIZE; i++) {
+			x += algPop[i].getNumIndAvgFitness();
+		}
+		numIndAvgFitness = x / ALG_POP_SIZE;
+	}
+	
+	public void setNumIndAvgFitnessData(int genNumber) {
+		
+		numIndAvgFitnessData[genNumber] = numIndAvgFitness;
+	}
+		
+	
 	/**********************************************************************/
 
 	/**SORTING THE POPULATION**********************************************/
@@ -261,11 +318,14 @@ class MasterAlg{
 	
 	public void runAlgMatingSeason(Alg control) {
 		
+		controlNumIndFitnessData[0] = control.getNumIndAvgFitness();
+		
 		for(int i = 0; i < generations; i++) {
 			algMatingSeason(i + 1);
 			for (int j = 0; j < 100; j++) {
 				control.numIndMatingSeason(j + 1);
 			}
+			controlNumIndFitnessData[i + 1] = control.getNumIndAvgFitness();
 		}
 		
 		setAlgTotAvgFitness();
@@ -310,6 +370,9 @@ class MasterAlg{
 		masterAlgMutateAlg();
 		
 		setData(genNumber);
+		setNumIndAvgFitnessData(genNumber);
+		
+		setAlgData(genNumber);
 		
 		/**printing out data*/
 		//data
@@ -404,7 +467,50 @@ class MasterAlg{
 		
 	}
 	
-	public void printAlgFitnessData() {
+	//compares control and masteralg average numind fitnesses over every generation
+	public void printCompareNumIndAvgFitness() {
+		
+		System.out.println("Comparing the average NumInd fitnesses");
+		for (int i = 0; i < generations + 1; i++) {
+			if (i == 0) {
+				System.out.println("Original population");
+			}
+			else {
+				int x = i + 1;
+				System.out.println("Generation " + x);
+			}
+			System.out.println("\tMasterAlg: " + numIndAvgFitnessData[i]);
+			System.out.println("\tControl: " + controlNumIndFitnessData[i]);
+		}
+	}
+	
+	//lists variables with fitness for each generation
+	public void printCompareVariablesFitness() {
+		
+		System.out.println("Comparing the variables of each Alg with its fitness");
+		for (int i = 0; i < generations + 1; i++) {
+			if (i == 0) {
+				System.out.println("Original population");
+			}
+			else {
+				int x = i + 1;
+				System.out.println("Generation " + x);
+			}
+			for (int j = 0; j < ALG_POP_SIZE; j++) {
+				System.out.println("Alg number: " + j);
+				System.out.println("\tFitness: " + algFitnessData[i][j]);
+				System.out.println("\tSelection: " + algSelectionData[i][j]);
+				System.out.println("\tElitism: " + algElitismData[i][j]);
+				System.out.println("\tCrossover: " + algCrossoverData[i][j]);
+				System.out.println("\tNumIndMutateRate: " + numIndMutateRateData[i][j]);
+				System.out.println("\tNumIndGeneMutateRate: " + numIndGeneMutateRateData[i][j]);
+				System.out.println("\tNumIndGeneBitMutateRate: " + numIndGeneBitMutateRateData[i][j]);
+			}
+		}
+	}
+			
+	
+	/*public void printAlgFitnessData() {
 		
 		for (int i = 0; i < algFitnessData.length; i++) {
 			if (i == 0) {
@@ -414,11 +520,11 @@ class MasterAlg{
 				int x = i + 1;
 				System.out.println("Generation " + x);
 			}
-			/*for (int j = 0; j < numIndAvgFitnessData[0].length; j++) {
+			for (int j = 0; j < numIndAvgFitnessData.length; j++) {
 				int y = j + 1;
 				System.out.println("NumInd " + y);
 				System.out.println("\tFitness: " + numIndAvgFitnessData[i][j]);
-			}*/
+			}
 		}
 	}
 	
@@ -436,7 +542,7 @@ class MasterAlg{
 			}
 		}
 	}
-	
+	*/
 	
 		
 	
@@ -633,6 +739,9 @@ class MasterAlg{
 		m.runAlgMatingSeason(control);//runs a matingseason on control and master, each of which
 				       //sets all data
 		
+		m.printCompareNumIndAvgFitness();
+		m.printCompareVariablesFitness();
+				       
 		//System.out.println(m);
 		//System.out.println("\n\n");
 		//m.algMatingSeason();

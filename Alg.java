@@ -141,7 +141,7 @@ public class Alg {
 	
 	/**for the control alg with a big population*/
 	public Alg(int size, int select, int elite, int cross, double rate1, double rate2, double rate3) {
-		
+		//System.out.println("size" + size);
 		numIndPop = new NumInd[size];
 		selection = select;
 		elitism = elite;
@@ -243,6 +243,7 @@ public class Alg {
 
 		numIndTotalFitness = 0;
 		for(int i = 0; i < numIndPop.length; i++) {
+			//System.out.println(numIndPop[i] == null);
 			numIndTotalFitness += numIndPop[i].getNumIndFitness();
 		}
 		
@@ -320,6 +321,12 @@ public class Alg {
 		numIndTotFitnessData[genNumber] = numIndTotalFitness;
 		numIndAvgFitnessData[genNumber] = numIndAvgFitness;
 	}
+	
+	public double getNumIndAvgFitness() {
+		
+		setNumIndTotAvgFitness();
+		return numIndAvgFitness;
+	}
 		
 	
 	/**********************************************************************/
@@ -328,10 +335,12 @@ public class Alg {
 	
 	//numIndSorts the top n NumInds in population according to fitness value
 	public void numIndSort(int n) {
-	
+	//System.out.println("length" + numIndPop.length);
 		for(int i = 0; i < n; i++) {
 			int best = i;
 			for(int j = i; j < numIndsSorted.length; j++) {
+				//System.out.println("j" + j + "best" + best);
+				//System.out.println(numIndsSorted[j] + " " + numIndsSorted[best]);
 				if(numIndPop[numIndsSorted[j]].getNumIndFitness() > numIndPop[numIndsSorted[best]].getNumIndFitness()) {
 					best = j;
 				}
@@ -358,7 +367,7 @@ public class Alg {
 		double oldAvg = numIndAvgFitness;
 		long oldTot = numIndTotalFitness;
 		NumInd[] oldPop = numIndPop;
-		NumInd[] temPop = new NumInd[NUMIND_POP_SIZE];
+		NumInd[] temPop = new NumInd[numIndPop.length];
 
 		//put the best elitism numinds at the front of numIndsSorted
 		numIndSort(elitism);
@@ -369,7 +378,7 @@ public class Alg {
 		}
 
 		//fill remaining population with offspring
-		for(int m = elitism; m < NUMIND_POP_SIZE; m++) {
+		for(int m = elitism; m < numIndPop.length; m++) {
 			int mother = numIndSelectParent(-1);
 			int father = numIndSelectParent(mother); //select a father who is not the mother 
 							

@@ -281,6 +281,7 @@ class MasterAlg{
 	
 	public void setNumIndAvgFitnessData(int genNumber) {
 		
+		setNumIndAvgFitness();
 		numIndAvgFitnessData[genNumber] = numIndAvgFitness;
 	}
 		
@@ -428,7 +429,7 @@ class MasterAlg{
 		//System.out.println("roulette");
 		long subPopTot = setSubPopTotalFitness(pop);
 		long ball = (long) (Math.random() * subPopTot);
-		System.out.println("ball" + ball);
+		//System.out.println("ball" + ball);
 		long sum = 0;
 		for(int i = 0; i < pop.length; i++){
 
@@ -734,13 +735,13 @@ class MasterAlg{
 		int gen = Integer.parseInt(gens);
 		MasterAlg m = new MasterAlg(gen);
 		
-		System.out.println("Which data do you want to see?");
-		System.out.println("");
+
 		m.runAlgMatingSeason(control);//runs a matingseason on control and master, each of which
 				       //sets all data
 		
-		m.printCompareNumIndAvgFitness();
-		m.printCompareVariablesFitness();
+		System.out.println("Which data do you want to see?");
+		//m.printCompareNumIndAvgFitness();
+		//m.printCompareVariablesFitness();
 				       
 		//System.out.println(m);
 		//System.out.println("\n\n");

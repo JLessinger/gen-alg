@@ -47,13 +47,21 @@ class MasterAlg{
 	
 	private long[][] algFitnessData;
 	private double[] algAvgFitnessData;
+	/****/
 	private int[] selectionData;
 	private int[] elitismData;
 	private int[] crossoverData;
 	private double[] algMutateRateData;
 	private double[] algGeneMutateRateData;
 	private double[] algGeneBitMutateRateData; 
-	
+	/**/
+	private int[] selectionDataIndices;
+	private int[] elitismDataIndices;
+	private int[] crossoverDataIndices;
+	private double[] algMutateRateDataIndices;
+	private double[] algGeneMutateRateDataIndices;
+	private double[] algGeneBitutateRateDataIndices;
+	/****/
 	private int generations;
 	
  
@@ -186,7 +194,6 @@ class MasterAlg{
 	}
 	
 	public void setData(int genNumber) {
-		
 		algAvgFitnessData[genNumber] = algAvgFitness;
 		selectionData[genNumber] = selection;
 		elitismData[genNumber] = elitism;
@@ -210,17 +217,17 @@ class MasterAlg{
 					best = j;
 				}
 			}
-			swap(i, best);
+			swap(i, best, algsSorted);
 		}
 			//System.out.println(algsSorted);
 	}
 
-	public void swap(int a, int b) {
+	public void swap(int a, int b, int[] array) {
 		
 		//System.out.println(algsSorted.length);
-		int tem = algsSorted[a];
-		algsSorted[a] = algsSorted[b];
-		algsSorted[b] = tem;
+		int tem = array[a];
+		array[a] = array[b];
+		array[b] = tem;
 	}
 	
 	/**********************************************************************/
@@ -231,7 +238,9 @@ class MasterAlg{
 		
 		for(int i = 0; i < generations; i++) {
 			algMatingSeason(i + 1);
-			control.numIndMatingSeason(i + 1);
+			for(int x = 0; x < 100; x++){
+				control.numIndMatingSeason(i + 1);
+			}
 		}
 		
 		setAlgTotAvgFitness();
@@ -385,6 +394,20 @@ class MasterAlg{
 		}
 	}
 	/**********************************************************************/
+	/****TEMPORARY PRINT DATA***********************/
+	public void sortVariables(){
+		sortSelection();
+		sortElitism();
+		sortCrossover();
+		sortAlgMutateRate();
+		sortAlgGeneMutateRate();
+		sortAlgGeneBitMutateRate();
+	}
+	
+	public void sortSelection(){
+		for(int i = 0; i < 
+	}
+	/********************************************/
 	public static void main(String[] args){
 		System.out.println(isParsableToDouble(".3"));
 		//System.out.println(Integer.parseInt("f"));
@@ -464,7 +487,7 @@ class MasterAlg{
 		
 		System.out.println("Which data do you want to see?");
 		System.out.println("");
-		m.runAlgMatingSeason();//runs a matingseason on control and master, each of which
+		m.runAlgMatingSeason(control);//runs a matingseason on control and master, each of which
 				       //sets all data
 		
 		//System.out.println(m);

@@ -45,6 +45,7 @@ class MasterAlg{
 	private double algGeneMutateRate;
 	private double algGeneBitMutateRate;
 	
+	private double[] numIndAvgFitnessData;
 	private long[][] algFitnessData;
 	private double[] algAvgFitnessData;
 	/****/
@@ -75,7 +76,6 @@ class MasterAlg{
 			algPop[i] = new Alg(template);
 			algsSorted[i] = i;
 		}
-		setData(0);
 	}
 	
 	public MasterAlg(int genNumber) {           //parameter for user imput
@@ -88,6 +88,16 @@ class MasterAlg{
 			algsSorted[i] = i;
 		}
 		generations = genNumber;
+		
+		//numIndAvgFitnessData = new double[
+		algFitnessData = new long[generations + 1][ALG_POP_SIZE];
+		algAvgFitnessData = new double[generations + 1];
+		selectionData = new int[generations + 1];
+		elitismData = new int[generations + 1];
+		crossoverData = new int[generations + 1];
+		algMutateRateData = new double[generations + 1];
+		algGeneMutateRateData = new double[generations + 1];
+		algGeneBitMutateRateData = new double[generations + 1];
 		setData(0);
 	}
 	
@@ -238,14 +248,14 @@ class MasterAlg{
 		
 		for(int i = 0; i < generations; i++) {
 			algMatingSeason(i + 1);
-			for(int x = 0; x < 100; x++){
-				control.numIndMatingSeason(i + 1);
+			for (int j = 0; j < 100; j++) {
+				control.numIndMatingSeason(j + 1);
 			}
 		}
 		
 		setAlgTotAvgFitness();
 		
-		setAlgFitnessData(generations + 1);
+		setAlgFitnessData(generations);
 	}
 	
 	public void algMatingSeason(int genNumber) {
@@ -372,8 +382,54 @@ class MasterAlg{
 	
 	/**********************************************************************/
 	
+	/**PRINT DATA**********************************************************/
+	
+	public void print() {
+		
+		
+	}
+	
+	public void printAlgFitnessData() {
+		
+		for (int i = 0; i < algFitnessData.length; i++) {
+			if (i == 0) {
+				System.out.println("Original population of Algs");
+			}
+			else {
+				int x = i + 1;
+				System.out.println("Generation " + x);
+			}
+			/*for (int j = 0; j < numIndAvgFitnessData[0].length; j++) {
+				int y = j + 1;
+				System.out.println("NumInd " + y);
+				System.out.println("\tFitness: " + numIndAvgFitnessData[i][j]);
+			}*/
+		}
+	}
+	
+	public void printAlgAvgFitnessData() {
+		
+		for (int i = 0; i < algAvgFitnessData.length; i++) {
+			if (i == 0) {
+				System.out.println("Original population of Algs");
+				System.out.println("\tAlg average fitness: " + algAvgFitnessData[i]);
+			}
+			else {
+				int x = i + 1;
+				System.out.println("Generation " + x);
+				System.out.println("\tAlg average fitness: " + algAvgFitnessData[i]);
+			}
+		}
+	}
+	
+	
+		
+	
+	/**********************************************************************/
+	
 
-	/***USER DATA STUFF****************************************************/
+	/**USER DATA STUFF*****************************************************/
+	
 	public static boolean isParsableToInt(String i){
 		try{
 			Integer.parseInt(i);
@@ -393,7 +449,9 @@ class MasterAlg{
 			return false;
 		}
 	}
+	
 	/**********************************************************************/
+
 	/****TEMPORARY PRINT DATA***********************/
 	public void sortVariables(){
 		sortSelection();
@@ -478,6 +536,7 @@ class MasterAlg{
 	
 	/********************************************/
 	public static void main(String[] args){
+
 		System.out.println(isParsableToDouble(".3"));
 		//System.out.println(Integer.parseInt("f"));
 		System.out.println("\n\n\n\n\nWelcome to the Master Genetic Algorithm.");

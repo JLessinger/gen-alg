@@ -507,6 +507,45 @@ public class Alg {
 	
 	/**********************************************************************/
 	
+	/**PRINT DATA**********************************************************/
+	
+	public void printNumIndFitnessData() {
+		
+		for (int i = 0; i < numIndFitnessData.length; i++) {
+			if (i == 0) {
+				System.out.println("Original population of NumInds");
+			}
+			else {
+				int x = i + 1;
+				System.out.println("Generation " + x);
+			}
+			for (int j = 0; j < numIndFitnessData[0].length; j++) {
+				int y = j + 1;
+				System.out.println("NumInd " + y);
+				System.out.println("\tFitness: " + numIndFitnessData[i][j]);
+			}
+		}
+	}
+	
+	public void printNumIndTotAvgFitnessData() {
+		
+		for (int i = 0; i < numIndTotFitnessData.length; i++) {
+			if (i == 0) {
+				System.out.println("Original population of NumInds");
+				System.out.println("\tNumInd total fitness: " + numIndTotFitnessData[i]);
+				System.out.println("\tNumInd average fitness: " + numIndAvgFitnessData[i]);
+			}
+			else {
+				int x = i + 1;
+				System.out.println("Generation " + x);
+				System.out.println("\tNumInd total fitness: " + numIndTotFitnessData[i]);
+				System.out.println("\tNumInd average fitness: " + numIndAvgFitnessData[i]);
+			}
+		}
+	}	
+	
+	/**********************************************************************/
+	
                                      
 
 

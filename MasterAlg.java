@@ -45,6 +45,18 @@ class MasterAlg{
 	private double algGeneMutateRate;
 	private double algGeneBitMutateRate;
 	
+	private long[][] algFitnessData;
+	private double[] algAvgFitnessData;
+	private int[] selectionData;
+	private int[] elitismData;
+	private int[] crossoverData;
+	private double[] algMutateRateData;
+	private double[] algGeneMutateRateData;
+	private double[] algGeneBitMutateRateData; 
+	
+	private int generations;
+	
+ 
 	
 	public MasterAlg() {
 		
@@ -55,9 +67,24 @@ class MasterAlg{
 			algPop[i] = new Alg(template);
 			algsSorted[i] = i;
 		}
+		setData(0);
 	}
 	
-	public String toString(){
+	public MasterAlg(int genNumber) {           //parameter for user imput
+		
+		algsSorted = new int[ALG_POP_SIZE];
+		algPop = new Alg[ALG_POP_SIZE];
+		template = new Alg();
+		for(int i = 0; i < ALG_POP_SIZE; i++){
+			algPop[i] = new Alg(template);
+			algsSorted[i] = i;
+		}
+		generations = genNumber;
+		setData(0);
+	}
+	
+	public String toString() {
+		
 		String s = "";
 		s += "\nselection:" + selection + "\nelitism:" + elitism + "\ncrossover:" + crossover
 		+ "\nalgMutateRate:" + algMutateRate + "\nalgGeneMutateRate:" + algGeneMutateRate
@@ -78,13 +105,13 @@ class MasterAlg{
 	 
 		s += "\nTotal Alg Fitness = " + algTotalFitness + "\n";
 		s += "Average Alg Fitness = " + algAvgFitness;
-		return s;	
+		return s;
 	}
 	
 	/**ACCESSORS AND MUTATORS**********************************************/
 	
 	//assumes setAlgFitness() and algSort(1) have been called IN THAT ORDER
-	public void setInstanceVars(){
+	public void setInstanceVars() {
 		
 		Alg best = algPop[algsSorted[0]];
 		selection = best.getSelection();
@@ -98,7 +125,7 @@ class MasterAlg{
 		algMutateRate = best.getNumIndMutateRate();
 		algGeneMutateRate = best.getNumIndGeneMutateRate();
 		algGeneBitMutateRate = best.getNumIndGeneBitMutateRate();
-	}
+	}	
 	
 	public Alg getAlg(int index) {
 
@@ -107,7 +134,7 @@ class MasterAlg{
 
 	public int[] getAlgsSorted() {
 		
-		return algsSorted;
+		return algsSorted;		
 	}
 	
 	public void setAlgTotAvgFitness() {
@@ -125,8 +152,12 @@ class MasterAlg{
 		long end = 0;
 		for (int i = 0; i < subPop.length; i++) {
 			long algFit = algPop[subPop[i]].getAlgFitness();
+			if (algFit < 0)
+				algFit = 0;
 			end += algFit;//Assumes setAlgFitness has already been called 
+
 			//System.out.println(algFit);
+
 		}							/*MAKE SURE THIS HAPPENS IN MATING SEASON*/
 		//what
 		return end;
@@ -145,6 +176,24 @@ class MasterAlg{
 	public double getAlgGeneBitMutateRate() {
 
 		return algGeneBitMutateRate;
+	}
+	
+	public void setAlgFitnessData(int genNumber) {
+	
+		for (int i = 0; i < ALG_POP_SIZE; i++) {
+			algFitnessData[genNumber][i] = algPop[i].getAlgFitness();
+		}
+	}
+	
+	public void setData(int genNumber) {
+		
+		algAvgFitnessData[genNumber] = algAvgFitness;
+		selectionData[genNumber] = selection;
+		elitismData[genNumber] = elitism;
+		crossoverData[genNumber] = crossover;
+		algMutateRateData[genNumber] = algMutateRate;
+		algGeneMutateRateData[genNumber] = algGeneMutateRate;
+		algGeneBitMutateRateData[genNumber] = algGeneBitMutateRate;
 	}
 	
 	/**********************************************************************/
@@ -178,9 +227,23 @@ class MasterAlg{
 	
 	/**MATING**************************************************************/
 	
-	public void algMatingSeason() {
+	public void runAlgMatingSeason(Alg control) {
 		
-		setAlgTotAvgFitness();//calls setAlgFitness 
+		for(int i = 0; i < generations; i++) {
+			algMatingSeason(i + 1);
+			control.numIndMatingSeason(i + 1);
+		}
+		
+		setAlgTotAvgFitness();
+		
+		setAlgFitnessData(generations + 1);
+	}
+	
+	public void algMatingSeason(int genNumber) {
+		
+		setAlgTotAvgFitness();
+		
+		setAlgFitnessData(genNumber - 1);
 		
 		if(elitism > 0){
 			//put the best elitism Algs at the front of algsSorted
@@ -211,6 +274,8 @@ class MasterAlg{
 		algPop = temPop;
 
 		masterAlgMutateAlg();
+		
+		setData(genNumber);
 		
 		/**printing out data*/
 		//data
@@ -266,16 +331,20 @@ class MasterAlg{
 		//System.out.println("roulette");
 		long subPopTot = setSubPopTotalFitness(pop);
 		long ball = (long) (Math.random() * subPopTot);
+		System.out.println("ball" + ball);
 		long sum = 0;
 		for(int i = 0; i < pop.length; i++){
+
 			sum += algPop[pop[i]].getAlgFitness();
 			//System.out.println("sum" + sum);
 			if(sum >= ball) {
 				//System.out.println(pop.length);
 				//System.out.println("sum " + sum + " ball " + ball);
+
 				return i;
 			}
 		}
+		System.out.println("here");
 		return -1;
 	}
 	
@@ -294,6 +363,7 @@ class MasterAlg{
 	
 	/**********************************************************************/
 	
+
 	/***USER DATA STUFF****************************************************/
 	public static boolean isParsableToInt(String i){
 		try{
@@ -325,6 +395,7 @@ class MasterAlg{
 		System.out.println("\n\t*Note: after you enter this information, you will have the option\n\tto display various data about the processes.\n");
 		
 		Scanner sc = new Scanner(System.in);
+
 		
 		/**CONTROL ALG INPUT*/
 		System.out.println("Enter the Alg's variables: selection, elitism, crossover,\nindividual mutation rate, gene mutation rate, bit mutation rate.");
@@ -377,6 +448,7 @@ class MasterAlg{
 		}
 		double r3 = Double.parseDouble(r3s);
 		
+
 		//population = total number of NumInds in m
 		Alg control = new Alg(ALG_POP_SIZE * Alg.NUMIND_POP_SIZE, sel, el, cr, r1, r2, r3);
 		/**********************/
@@ -400,4 +472,5 @@ class MasterAlg{
 		//m.algMatingSeason();
 		//System.out.println(m);
 	}
+
 }

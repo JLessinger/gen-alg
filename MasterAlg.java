@@ -59,9 +59,9 @@ class MasterAlg{
 	private int[] selectionDataIndices;
 	private int[] elitismDataIndices;
 	private int[] crossoverDataIndices;
-	private double[] algMutateRateDataIndices;
-	private double[] algGeneMutateRateDataIndices;
-	private double[] algGeneBitMutateRateDataIndices;
+	private int[] algMutateRateDataIndices;
+	private int[] algGeneMutateRateDataIndices;
+	private int[] algGeneBitMutateRateDataIndices;
 	/****/
 	private int generations;
 	
@@ -99,6 +99,21 @@ class MasterAlg{
 		algGeneMutateRateData = new double[generations + 1];
 		algGeneBitMutateRateData = new double[generations + 1];
 		setData(0);
+		selectionDataIndices = new int[generations+1];
+		elitismDataIndices = new int[generations+1];
+		crossoverDataIndices = new int[generations+1];
+		algMutateRateDataIndices = new int[generations+1];
+		algGeneMutateRateDataIndices = new int[generations+1];
+		algGeneBitMutateRateDataIndices = new int[generations+1];
+		for(int j = 0; j < generations+1; j++){
+			selectionDataIndices[j] = j;
+			elitismDataIndices[j] = j;
+			crossoverDataIndices[j] = j;
+			algMutateRateDataIndices[j] = j;
+			algGeneMutateRateDataIndices[j] = j;
+			algGeneBitMutateRateDataIndices[j] = j;
+		}
+
 	}
 	
 	public String toString() {
